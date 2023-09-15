@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Misto</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+        }
+
+        #wrapper {
+            position:relative;
+            top: 0%;
+            left: 30%;
+        }
+        #canvas2{
+            background: rgba(255, 0, 0, 0.5);
+        }
+        #canvas3{
+            background: rgba(0, 0, 255, 0.3);
+        }
+       #canvas,
+       #canvas2,
+       #canvas3{
+        position: absolute;
+        /* max-width: 1000px;
+        max-height: 800px; */
+        top: 0px;
+        left: 0px;
+       }
+       
+    </style>
+</head>
+
+<body>
+    <input type="file" id="fileinput" accept="image/*">
+    <input type="color" id="colore">
+    <input type="button" value="salva" onclick="saveDotImage()">
+    <br>
+    <input type="checkbox"><span>Puntini</span>
+    <br>
+    <input type="checkbox"><span>Linee</span>
+    <br>
+    <input type="checkbox"><span>Immagine</span>
+
+    
+    <center>
+        <div id="wrapper">
+            <canvas id="canvas"></canvas>
+            <canvas id="canvas2"></canvas>
+            <canvas id="canvas3"></canvas>
+        </div>
+    </center>
+    <script src="./drawDot.js"></script>
+    <script src="./LoadImg.js"></script>
+    <script src="./saveImg.js"></script>
+    <!-- <script src="./provaBgLoad.js"></script> non funziona -->
+</body>
+
+</html>
