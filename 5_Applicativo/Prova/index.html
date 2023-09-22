@@ -15,7 +15,7 @@
         #wrapper {
             position:relative;
             top: 0%;
-            left: 30%;
+            /* left: 30%; */
         }
         #canvas2{
             background: rgba(255, 0, 0, 0.5);
@@ -32,6 +32,13 @@
         top: 0px;
         left: 0px;
        }
+       #canvas2, #canvas3{
+        visibility: hidden;
+       }
+       #canvas{
+        max-width: 170vh;
+        max-height: 80vh;
+       }
        
     </style>
 </head>
@@ -40,25 +47,38 @@
     <input type="file" id="fileinput" accept="image/*">
     <input type="color" id="colore">
     <input type="button" value="salva" onclick="saveDotImage()">
+    <input type="button" value="clear" id="clear">
+    <input type="button" value="redraw" id="redraw">
     <br>
-    <input type="checkbox"><span>Puntini</span>
+    <input type="checkbox" class="scelta" onchange="layerVisibility()"><span>Puntini</span>
     <br>
-    <input type="checkbox"><span>Linee</span>
+    <input type="checkbox" class="scelta" onchange="layerVisibility()"><span>Linee</span>
     <br>
-    <input type="checkbox"><span>Immagine</span>
-
+    <input type="checkbox" class="scelta" onchange="layerVisibility()"><span>Immagine</span>
+    <br>
+    <span>Fontsize:</span>
+    <input type="number" id="fontsize" title="Fontsize" value="16" >
+    <input type="range" id="dimensione"  oninput="scriviGrandezza()" value="5" step="1" min="1" max="50">
+    <span id="value">5</span>
+    <br>
+    <input type="radio" name="Strumenti"  checked class="tools" onchange="wichtool()">
+    <label for="">puntino</label>
+    <br>
+    <input type="radio" name="Strumenti" class="tools" onchange="wichtool()">
+    <label for="penna">penna</label>
     
+
+
     <center>
         <div id="wrapper">
-            <canvas id="canvas"></canvas>
-            <canvas id="canvas2"></canvas>
-            <canvas id="canvas3"></canvas>
+            <canvas id="canvas"></canvas> <!--Immagine-->
+            <!-- <canvas id="canvas2"></canvas>Linee
+            <canvas id="canvas3"></canvas>Puntini -->
         </div>
     </center>
-    <script src="./drawDot.js"></script>
+    <script src="./draw.js"></script>
     <script src="./LoadImg.js"></script>
     <script src="./saveImg.js"></script>
-    <!-- <script src="./provaBgLoad.js"></script> non funziona -->
 </body>
 
 </html>

@@ -11,3 +11,4 @@ Da prendere spunto:
 Dspaly Img (Funzionate)-->https://medium.com/front-end-weekly/draw-an-image-in-canvas-using-javascript-%EF%B8%8F-2f75b7232c63
 getMousePoint(Funzionante)-->https://www.geeksforgeeks.org/how-to-get-the-coordinates-of-a-mouse-click-on-a-canvas-element/
 DrawPoint(Funzionate)-->https://dirask.com/posts/JavaScript-draw-point-on-canvas-element-PpOBLD
+pen(Funzionante)-->https://medium.com/@zxlee618/drawing-on-a-html-canvas-b7566624b17f
