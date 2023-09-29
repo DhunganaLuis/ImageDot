@@ -47,26 +47,25 @@
     <input type="file" id="fileinput" accept="image/*">
     <input type="color" id="colore">
     <input type="button" value="salva" onclick="saveDotImage()">
-    <input type="button" value="clear" id="clear">
-    <input type="button" value="redraw" id="redraw">
+    <input type="button" value="Delete position" onclick="deletePoint()">
+    <input type="button" value="proava" onclick="bho()" id="b">
     <br>
-    <input type="checkbox" class="scelta" onchange="layerVisibility()"><span>Puntini</span>
-    <br>
-    <input type="checkbox" class="scelta" onchange="layerVisibility()"><span>Linee</span>
-    <br>
-    <input type="checkbox" class="scelta" onchange="layerVisibility()"><span>Immagine</span>
-    <br>
-    <span>Fontsize:</span>
-    <input type="number" id="fontsize" title="Fontsize" value="16" >
+    <span>Dot size:</span>
     <input type="range" id="dimensione"  oninput="scriviGrandezza()" value="5" step="1" min="1" max="50">
     <span id="value">5</span>
+    <br>
+    <span>Line size:</span>
+    <input type="range" min="0" max="50" step="1" oninput="scriviGrandezza()" id="lineSize" value="4">
+    <span id="line">4</span>
     <br>
     <input type="radio" name="Strumenti"  checked class="tools" onchange="wichtool()">
     <label for="">puntino</label>
     <br>
     <input type="radio" name="Strumenti" class="tools" onchange="wichtool()">
     <label for="penna">penna</label>
-    
+    <br>
+    <input type="radio" name="Strumenti" class="tools" onchange="wichtool()">
+    <label for="">Mouse</label>
 
 
     <center>
@@ -79,6 +78,7 @@
     <script src="./draw.js"></script>
     <script src="./LoadImg.js"></script>
     <script src="./saveImg.js"></script>
+
 </body>
 
 </html>

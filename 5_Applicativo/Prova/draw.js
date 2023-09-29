@@ -1,17 +1,24 @@
-//Disegnare puntini
+//variabili e costanti globali
 let canvas = document.getElementById("canvas");
 var context = canvas.getContext('2d');
 var puntini = [];
+var Linee = [];
 var canDraw = false;
 var canMakePoint = true;
+var isSelectedPoi = false;
 var count = 1;
-//Event listener  
+var shouldMove = false;
+var canMovePoint=false;
+const MAIN_MOUSE_BUTTON = 0;
+var pointSelected = -1;
+//--------------------------------------------------------------------------------
+//Event listener per i puntini
 canvas.addEventListener("mousedown", function (e) {
   if (canMakePoint) {
     var coo = getMousePosition(canvas, e);
     var colore = document.getElementById('colore').value;
     var pointSize = document.getElementById("dimensione").value;
-    var fontSize = (16/5)*pointSize;
+    var fontSize = (16 / 5) * pointSize;
     console.log(coo);
     console.log(colore);
     drawPoint(context, coo[0], coo[1], count, colore, pointSize, fontSize);
@@ -30,7 +37,7 @@ canvas.addEventListener("mousedown", function (e) {
   }
 
 });
-
+//------------------------------------------------------------------
 //funzione che calcola le coordinate di dove si è cliccato
 function getMousePosition(canvas, event) {
   let rect = canvas.getBoundingClientRect();
@@ -39,13 +46,9 @@ function getMousePosition(canvas, event) {
   let x = Math.round((event.x - rect.left) * scaleX);
   let y = Math.round((event.y - rect.top) * scaleY);
   var coordinate = [x, y];
-  // console.log(event.clientX+" "+ rect.left);
-  // console.log("Coordinate x: " + coordinate[0], 
-  //             "Coordinate y: " + coordinate[1]);
   return coordinate;
 }
-
-
+//-----------------------------------------------------------------------
 //funzione che disegna un puntino nel punto in cui si è cliccato 
 function drawPoint(context, x, y, label, color, size, fontSize) {
   if (color == null) {
@@ -73,32 +76,87 @@ function drawPoint(context, x, y, label, color, size, fontSize) {
     context.fillText(label, textX, textY);
   }
 }
-//scriva la grandezza del puntino in  base alla posizione del input range
-function scriviGrandezza() {
-  var value = grandezza = document.getElementById("dimensione").value;
-  document.getElementById("value").innerHTML = value;
+//---------------------------------------------------------------------
+//selezionamento, rimozione e spostamento dei puntini
+canvas.addEventListener("mousedown", controllaPuntino);
+canvas.addEventListener("mousemove", movePoint, false);
+canvas.addEventListener("mouseup", endPointMove);
+var pointSelected = -1;
+var lastColor;
+function controllaPuntino(event) {
+  if (canMovePoint) {
+    var pointDim = document.getElementById("dimensione").value;
+    var pos = getMousePosition(canvas, event);
+    for (var i = 0; i < puntini.length; i++) {
+      if (Math.abs(puntini[i]["x"] - pos[0]) < pointDim && Math.abs(puntini[i]["y"] - pos[1]) < pointDim) {
+        if (pointSelected > -1) {
+          puntini[pointSelected]["color"] = lastColor;
+        }
+        lastColor = puntini[i]["color"];
+        puntini[i]["color"] = "#4AA8F4";
+        pointSelected = i;
+        shouldMove = true;
+        break;
+      } else {
+        if (pointSelected > -1) {
+          puntini[pointSelected]["color"] = lastColor;
+          pointSelected = -1;
+        }
+      }
+    }
+    refreshCanvas(context);
+  }
 }
-//Funzione vhe pulisce in canvas da tutto ciò che è disegnato sopra
-function clearCanvas(context) {
-  context.clearRect(0, 0, context.canvas.width, context.canvas.height);
-  console.log("pulito");
+//funzione che muove i puntini
+function movePoint(event) {
+  if (shouldMove) {
+    var coo = getMousePosition(canvas, event);
+    puntini[pointSelected]["x"] = coo[0];
+    puntini[pointSelected]["y"] = coo[1];
+    refreshCanvas(context);
+  }
 }
-var clr = document.getElementById("clear");
-clr.addEventListener("click", event => { clearCanvas(context) });
-//Funzione vhe ridisegna tutti i puntini
-function redraw() {
-  for (var i = 0; i < puntini.length; i++) {
-    drawPoint(puntini[i]["context"], puntini[i]["x"], puntini[i]["y"], puntini[i]["number"], puntini[i]["color"], puntini[i]["pointSize"], puntini[i]["fontSize"]);
+//funzione che termina la selezione
+function endPointMove(event) {
+  if (event.button === MAIN_MOUSE_BUTTON) {
+    shouldMove = false;
+  }
+}
+//Funzione che rimuove il puntino selezionato
+function deletePoint() {
+  if (pointSelected > -1) {
+    console.log("rimozione in corso");
+    console.log(pointSelected);
+    puntini.splice(pointSelected,1);
+    count--;
+    pointSelected=-1;
+    console.log(puntini);
+    reorderNumber();
+    refreshCanvas(context);
+  }
+}
+function reorderNumber(){
+  for (var i=0;i<puntini.length;i++){
+    puntini[i]["number"]= i+1;
   }
 
 }
-var riscrivi = document.getElementById("redraw");
-riscrivi.addEventListener("click", event => { redraw() });
+//-----------------------------------------------------------------------------------
+//scriva la grandezza del puntino in  base alla posizione del input range
+function scriviGrandezza() {
+  var grandezza = document.getElementById("dimensione").value;
+  var lineSize = document.getElementById("lineSize").value;
+  document.getElementById("value").innerHTML = grandezza;
+  document.getElementById("line").innerHTML = lineSize;
+  refreshCanvas(context);
+  
 
+}
+//------------------------------------------------------------------------------------
 //Strumento penna
-const MAIN_MOUSE_BUTTON = 0;
 function setLineProperties(context) {
-  context.lineWidth = 4;
+  var width = document.getElementById("lineSize").value;
+  context.lineWidth = width;
   context.lineJoin = "round";
   context.lineCap = "round";
   return context;
@@ -134,15 +192,33 @@ function move(event) {
     context.stroke()
   }
 }
-//controllo puntino o penna
+//------------------------------------------------------------------------------
+//controllo scelta dell'utente
 function wichtool() {
   var isChecked = document.getElementsByClassName("tools");
   if (isChecked[0].checked) {
     canMakePoint = true;
     canDraw = false;
+    canMovePoint = false;
   } else if (isChecked[1].checked) {
     canMakePoint = false;
     canDraw = true;
+    canMovePoint = false;
+  } else if (isChecked[2]) {
+    canMakePoint = false;
+    canDraw = false;
+    canMovePoint = true;
   }
-
+  console.log(canMovePoint);
 }
+//---------------------------------------------------------------------
+// funzione che ricarica il canvas
+function refreshCanvas(context) {
+  context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+  console.log("pulito");
+  for (var i = 0; i < puntini.length; i++) {
+    drawPoint(puntini[i]["context"], puntini[i]["x"], puntini[i]["y"], puntini[i]["number"], puntini[i]["color"], puntini[i]["pointSize"], puntini[i]["fontSize"]);
+  }
+  console.log("ridisegnato");
+}
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
