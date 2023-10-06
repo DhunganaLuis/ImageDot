@@ -13,33 +13,44 @@
         }
 
         #wrapper {
-            position:relative;
+            position: relative;
             top: 0%;
             /* left: 30%; */
         }
-        #canvas2{
+
+        #canvas2 {
             background: rgba(255, 0, 0, 0.5);
         }
-        #canvas3{
+
+        #canvas3 {
             background: rgba(0, 0, 255, 0.3);
         }
-       #canvas,
-       #canvas2,
-       #canvas3{
-        position: absolute;
-        /* max-width: 1000px;
+
+        #canvas,
+        #canvas2,
+        #canvas3 {
+            position: absolute;
+            /* max-width: 1000px;
         max-height: 800px; */
-        top: 0px;
-        left: 0px;
-       }
-       #canvas2, #canvas3{
-        visibility: hidden;
-       }
-       #canvas{
-        max-width: 170vh;
-        max-height: 80vh;
-       }
-       
+            top: 0px;
+            left: 0px;
+        }
+
+        #canvas2,
+        #canvas3 {
+            visibility: hidden;
+        }
+
+        #canvas {
+            max-width: 170vh;
+            max-height: 80vh;
+        }
+        #dotNumber{
+            width: 7vh;
+        }
+        #selectNum{
+            display: none;
+        }
     </style>
 </head>
 
@@ -49,16 +60,19 @@
     <input type="button" value="salva" onclick="saveDotImage()">
     <input type="button" value="Delete position" onclick="deletePoint()">
     <input type="button" value="inverti numeri" onclick="numberInverter()" id="b">
+    <div id="selectNum">
+        <span>numero puntino: </span><input type="number" id="dotNumber" min="1" onKeyDown="return false">
+    </div>
     <br>
     <span>Dot size:</span>
-    <input type="range" id="dimensione"  oninput="getDotSize()" value="5" step="1" min="1" max="50">
+    <input type="range" id="dimensione" oninput="getDotSize()" value="5" step="1" min="1" max="50">
     <span id="value">5</span>
     <br>
     <span>Line size:</span>
     <input type="range" min="0" max="50" step="1" oninput="scriviGrandezza()" id="lineSize" value="4">
     <span id="line">4</span>
     <br>
-    <input type="radio" name="Strumenti"  checked class="tools" onchange="wichtool()">
+    <input type="radio" name="Strumenti" checked class="tools" onchange="wichtool()">
     <label for="">puntino</label>
     <br>
     <input type="radio" name="Strumenti" class="tools" onchange="wichtool()">
@@ -66,7 +80,15 @@
     <br>
     <input type="radio" name="Strumenti" class="tools" onchange="wichtool()">
     <label for="">Mouse</label>
-
+    <br>
+    <div id="container">
+        <input type="checkbox" class="layer" checked>
+        <label for="vehicle1"> Puntini</label><br>
+        <input type="checkbox" class="layer" checked>
+        <label for="vehicle2">Linee visibili</label><br>
+        <input type="checkbox" class="layer" checked>
+        <label for="vehicle3">Immagine</label><br>
+    </div>
 
     <center>
         <div id="wrapper">

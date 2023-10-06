@@ -8,7 +8,8 @@ Da prendere spunto:
 --> https://dev.to/javascriptacademy/create-a-drawing-app-using-javascript-and-canvas-2an1
 
 
-Dspaly Img (Funzionate)-->https://medium.com/front-end-weekly/draw-an-image-in-canvas-using-javascript-%EF%B8%8F-2f75b7232c63
-getMousePoint(Funzionante)-->https://www.geeksforgeeks.org/how-to-get-the-coordinates-of-a-mouse-click-on-a-canvas-element/
-DrawPoint(Funzionate)-->https://dirask.com/posts/JavaScript-draw-point-on-canvas-element-PpOBLD
-pen(Funzionante)-->https://medium.com/@zxlee618/drawing-on-a-html-canvas-b7566624b17f
+Dspaly Img (Funzionate)-->https://medium.com/front-end-weekly/draw-an-image-in-canvas-using-javascript-%EF%B8%8F-2f75b7232c63(22.09.23)
+getMousePoint(Funzionante)-->https://www.geeksforgeeks.org/how-to-get-the-coordinates-of-a-mouse-click-on-a-canvas-element/(15.09.23)
+DrawPoint(Funzionate)-->https://dirask.com/posts/JavaScript-draw-point-on-canvas-element-PpOBLD(15.09.23)
+pen(Funzionante)-->https://medium.com/@zxlee618/drawing-on-a-html-canvas-b7566624b17f(6.10.23)
+tool(funzionante)-->https://codepen.io/seangeleno/pen/BjGexE(6.10.23)
