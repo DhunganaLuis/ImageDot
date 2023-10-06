@@ -4,8 +4,8 @@ let checkboxes = document.getElementsByClassName("scelta");
 
 fileInput.addEventListener('change',
   function (ev) {
-    console.log("hi");
-    console.log(ev.target.files);
+    // console.log("hi");
+    // console.log(ev.target.files);
     if (ev.target.files) {
       let file = ev.target.files[0];
       var reader = new FileReader();
@@ -14,7 +14,7 @@ fileInput.addEventListener('change',
         var image = new Image();
         image.src = e.target.result;
         image.onload = function () {
-          console.log("loading");
+          // console.log("loading");
           var canvas = document.getElementById('canvas');
           canvas.style.backgroundImage = 'url("' + this.src + '") ';
           canvas.style.backgroundSize = 'contain';

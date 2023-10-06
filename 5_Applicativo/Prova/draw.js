@@ -1,17 +1,18 @@
 //variabili e costanti globali
 let canvas = document.getElementById("canvas");
 var context = canvas.getContext('2d');
-var puntini = [];
+var puntini;
 var Linee = [];
 var canDraw = false;
 var canMakePoint = true;
 var isSelectedPoi = false;
-var count = 1;
+var count;
 var shouldMove = false;
 var canMovePoint=false;
 const MAIN_MOUSE_BUTTON = 0;
 var pointSelected = -1;
 //--------------------------------------------------------------------------------
+//Puntini 
 //Event listener per i puntini
 canvas.addEventListener("mousedown", function (e) {
   if (canMakePoint) {
@@ -19,8 +20,8 @@ canvas.addEventListener("mousedown", function (e) {
     var colore = document.getElementById('colore').value;
     var pointSize = document.getElementById("dimensione").value;
     var fontSize = (16 / 5) * pointSize;
-    console.log(coo);
-    console.log(colore);
+    // console.log(coo);
+    // console.log(colore);
     drawPoint(context, coo[0], coo[1], count, colore, pointSize, fontSize);
     let puntoObj = {
       "context": context,
@@ -37,18 +38,7 @@ canvas.addEventListener("mousedown", function (e) {
   }
 
 });
-//------------------------------------------------------------------
-//funzione che calcola le coordinate di dove si è cliccato
-function getMousePosition(canvas, event) {
-  let rect = canvas.getBoundingClientRect();
-  let scaleX = canvas.width / rect.width;
-  let scaleY = canvas.height / rect.height;
-  let x = Math.round((event.x - rect.left) * scaleX);
-  let y = Math.round((event.y - rect.top) * scaleY);
-  var coordinate = [x, y];
-  return coordinate;
-}
-//-----------------------------------------------------------------------
+
 //funzione che disegna un puntino nel punto in cui si è cliccato 
 function drawPoint(context, x, y, label, color, size, fontSize) {
   if (color == null) {
@@ -76,7 +66,6 @@ function drawPoint(context, x, y, label, color, size, fontSize) {
     context.fillText(label, textX, textY);
   }
 }
-//---------------------------------------------------------------------
 //selezionamento, rimozione e spostamento dei puntini
 canvas.addEventListener("mousedown", controllaPuntino);
 canvas.addEventListener("mousemove", movePoint, false);
@@ -125,12 +114,12 @@ function endPointMove(event) {
 //Funzione che rimuove il puntino selezionato
 function deletePoint() {
   if (pointSelected > -1) {
-    console.log("rimozione in corso");
-    console.log(pointSelected);
+    // console.log("rimozione in corso");
+    // console.log(pointSelected);
     puntini.splice(pointSelected,1);
     count--;
     pointSelected=-1;
-    console.log(puntini);
+    // console.log(puntini);
     reorderNumber();
     refreshCanvas(context);
   }
@@ -141,7 +130,31 @@ function reorderNumber(){
   }
 
 }
+//funzione che inverte il numero dei puntini 
+function numberInverter(){
+  if(puntini.length!=0 || puntini.length!=1){
+    console.log("inverto");
+    for(var i= puntini.length-1;i>=0;i--){
+      console.log("contrario");
+      puntini[i]["number"]=puntini.length- (puntini[i]["number"]-1);
+    }
+    refreshCanvas(context);
+  }else{
+    alert("Inserire almeno 2 puntini per poter invertire i numeri");
+  }
+}
 //-----------------------------------------------------------------------------------
+//funzione che calcola le coordinate di dove si è cliccato
+function getMousePosition(canvas, event) {
+  let rect = canvas.getBoundingClientRect();
+  let scaleX = canvas.width / rect.width;
+  let scaleY = canvas.height / rect.height;
+  let x = Math.round((event.x - rect.left) * scaleX);
+  let y = Math.round((event.y - rect.top) * scaleY);
+  var coordinate = [x, y];
+  return coordinate;
+}
+//--------------------------------------------------------------------------
 //scriva la grandezza del puntino in  base alla posizione del input range
 function scriviGrandezza() {
   var grandezza = document.getElementById("dimensione").value;
@@ -209,16 +222,46 @@ function wichtool() {
     canDraw = false;
     canMovePoint = true;
   }
-  console.log(canMovePoint);
+  // console.log(canMovePoint);
 }
 //---------------------------------------------------------------------
 // funzione che ricarica il canvas
 function refreshCanvas(context) {
   context.clearRect(0, 0, context.canvas.width, context.canvas.height);
-  console.log("pulito");
+  // console.log("pulito");
   for (var i = 0; i < puntini.length; i++) {
     drawPoint(puntini[i]["context"], puntini[i]["x"], puntini[i]["y"], puntini[i]["number"], puntini[i]["color"], puntini[i]["pointSize"], puntini[i]["fontSize"]);
   }
-  console.log("ridisegnato");
+  // console.log("ridisegnato");
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//Loaf Image
+//Mostra l'immagine scelta dall'utente
+let fileInput = document.getElementById('fileinput');
+fileInput.addEventListener('change',
+  function (ev) {
+    // console.log("hi");
+    // console.log(ev.target.files);
+    if (ev.target.files) 
+    {
+      count= 1;
+      puntini=[];
+      refreshCanvas(context);
+      let file = ev.target.files[0];
+      var reader = new FileReader();
+      reader.onloadend = function (e) {
+        var image = new Image();
+        image.src = e.target.result;
+        image.onload = function () {
+          // console.log("loading");
+          var canvas = document.getElementById('canvas');
+          canvas.style.backgroundImage = 'url("' + this.src + '") ';
+          canvas.style.backgroundSize = 'contain';
+          canvas.width = this.width;
+          canvas.height = this.height;
+        }
+      }
+      reader.readAsDataURL(file);
+
+    }
+  });

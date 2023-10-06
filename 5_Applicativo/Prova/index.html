@@ -45,13 +45,13 @@
 
 <body>
     <input type="file" id="fileinput" accept="image/*">
-    <input type="color" id="colore">
+    <input type="color" id="colore" oninput="getDotColor()">
     <input type="button" value="salva" onclick="saveDotImage()">
     <input type="button" value="Delete position" onclick="deletePoint()">
-    <input type="button" value="proava" onclick="bho()" id="b">
+    <input type="button" value="inverti numeri" onclick="numberInverter()" id="b">
     <br>
     <span>Dot size:</span>
-    <input type="range" id="dimensione"  oninput="scriviGrandezza()" value="5" step="1" min="1" max="50">
+    <input type="range" id="dimensione"  oninput="getDotSize()" value="5" step="1" min="1" max="50">
     <span id="value">5</span>
     <br>
     <span>Line size:</span>
@@ -75,9 +75,9 @@
             <canvas id="canvas3"></canvas>Puntini -->
         </div>
     </center>
-    <script src="./draw.js"></script>
-    <script src="./LoadImg.js"></script>
+    <!-- <script src="./draw.js"></script> -->
     <script src="./saveImg.js"></script>
+    <script src="./class.js"></script>
 
 </body>
 
