@@ -4,10 +4,15 @@ var dotCount;
 var canDraw = false;
 var canMakePoint = true;
 var canMovePoint = false;
+var canRect = false;
+var shouldRect = false;
+var canEll = false;
+var shouldEll = false;
 let canvas = document.getElementById("canvas");
 var context = canvas.getContext('2d');
 var dotSize = 5;
 var puntini;
+var snapshot;
 var dotColor = '#000';
 var pointSelected = -1;
 const MAIN_MOUSE_BUTTON = 0;
@@ -20,7 +25,13 @@ var colorLine = "#000";
 var shouldDraw = false;
 var xLine = 0;
 var yLine = 0;
+var starDragX=0;
+var starDragY=0;
 var ImgSrc;
+var lastRect;
+var lastEll;
+var rettangoli;
+var ellissi;
 //Classe dot 
 class Dot {
   constructor() {
@@ -222,6 +233,149 @@ function lineRedraw() {
     linee[i].draw(context);
   }
 }
+//---------------------------------------------------------------------
+//calsse Ellipse
+class Ellipse{
+  constructor(posX,posY,starX,startY){
+    this.x=posX;
+    this.y=posY;
+    this.startX=starX;
+    this.starY=startY;
+  }
+  draw(context){
+    var w= this.x-this.startX;
+    var h=this.y-this.starY;
+    var radius = Math.sqrt(Math.pow((this.startX - this.x), 2) + Math.pow((this.starY - this.y), 2));
+    context.beginPath();
+    context.ellipse(this.startX, this.starY, Math.abs(w), Math.abs(h), 0, 2 * Math.PI, false);
+    context.stroke();
+  }
+  
+}
+function ellStart(event) {
+  if (canEll) {
+    console.log("start");
+      shouldEll = true;
+      var startDragCoo = getMousePosition(canvas, event);
+      starDragX = startDragCoo[0];
+      starDragY = startDragCoo[1];
+  }
+
+}
+function makeell(event) {
+  if (shouldEll) {
+    console.log("drag");
+      clearCanvas(context);
+      var lastCoo = getMousePosition(canvas, event);
+      var ell = new Ellipse(lastCoo[0],lastCoo[1],starDragX,starDragY,)
+      ell.draw(context);
+      lastEll=ell;
+  }
+
+}
+function ellStop() {
+  console.log("stop");
+  shouldEll = false;
+  ellissi.push(lastEll);
+
+}
+function ellRedraw(){
+  for(var i=0;i<ellissi.length;i++){
+    ellissi[i].draw(context);
+  }
+}
+//--------------------------------------------------------------------------
+//class Rect
+class Rect {
+  constructor(posX, posY, startX, starY) {
+      this.startX = startX;
+      this.starY = starY;
+      this.x = posX;
+      this.y = posY;
+  }
+  draw(context) {
+      var w = this.x - this.startX;
+      var h = this.y - this.starY;
+      context.beginPath();
+      context.rect(this.startX, this.starY, w, h);
+      context.stroke();
+      console.log("draw");
+  }
+
+}
+function rectStart(event) {
+  console.log(canRect);
+  if (canRect) {
+    console.log("start");
+      shouldRect = true;
+      var startDragCoo = getMousePosition(canvas, event);
+      starDragX = startDragCoo[0];
+      starDragY = startDragCoo[1];
+  }
+
+}
+function makeRect(event) {
+  if (shouldRect) {
+    console.log("drag");
+      clearCanvas(context);
+      var lastCoo = getMousePosition(canvas, event);
+      var rettangolo = new Rect(lastCoo[0], lastCoo[1], starDragX, starDragY);
+      rettangolo.draw(context);
+      lastRect=rettangolo;
+  }
+
+}
+function rectStop() {
+  console.log("stop");
+  shouldRect = false;
+  rettangoli.push(lastRect);
+}
+function rectRedraw(){
+  for(var i=0;i<rettangoli.length;i++){
+    rettangoli[i].draw(context);
+  }
+}
+//-------------------------------------------------------------------------
+// class line{
+//   constructor(posX,posY,starX,starY){
+//     this.x=posX;
+//     this.y=posY;
+//     this.startX=starX;
+//     this.starY=starDragY;
+//   }
+//   draw(context){
+//     context.beginPath();
+//     context.moveTo(this.startX,this.starY);
+//     context.line(this.x,this.x);
+//     context.stroke();
+//   }
+
+// }
+// function LineStart(event) {
+//   console.log(canLine);
+//   if (canLine) {
+//     console.log("start");
+//       shouldLine = true;
+//       var startDragCoo = getMousePosition(canvas, event);
+//       starDragX = startDragCoo[0];
+//       starDragY = startDragCoo[1];
+//   }
+
+// }
+// function makeLineDritta(event) {
+//   if (shouldLine) {
+//     console.log("drag");
+//       clearCanvas(context);
+//       var lastCoo = getMousePosition(canvas, event);
+//       var line= new
+//   }
+
+// }
+// function LineStop() {
+//   console.log("stop");
+//   shouldLine = false;
+// }
+
 //--------------------------------------------------------------------------------
 // funzione che pulisce il canvas
 function clearCanvas(context) {
@@ -259,7 +413,7 @@ function refreshCanvas(context) {
     canMakePoint=false;
   }
   if (checkboxes[1].checked) {
-    lineRedraw();
+    lineVisibili();
     // wichtool();
   }else{
     canDraw= false;
@@ -318,27 +472,40 @@ function numberInverter() {
 //------------------------------------------------------------------------------
 //controllo scelta dell'utente
 function wichtool() {
-  console.log("tools");
   var isChecked = document.getElementsByClassName("tools");
+  console.log(isChecked);
   if (isChecked[0].checked) {
     canMakePoint = true;
     canDraw = false;
     canMovePoint = false;
-    console.log("puntino " + canMakePoint);
   } else if (isChecked[1].checked) {
     canMakePoint = false;
     canDraw = true;
     canMovePoint = false;
-    console.log("penna " + canMakePoint);
-  } else if (isChecked[2]) {
+  } else if (isChecked[2].checked) {
     canMakePoint = false;
     canDraw = false;
     canMovePoint = true;
-    console.log("Mouse " + canMakePoint);
+  } else if(isChecked[3].checked){
+    canMakePoint = false;
+    canDraw = false;
+    canMovePoint = false;
+    canRect=true;
+  }else if(isChecked[4].checked){
+    canMakePoint = false;
+    canDraw = false;
+    canMovePoint = false;
+    canRect=false;
+    canEll=true;
   }
   // console.log(canMovePoint);
 }
 //-------------------------------------------------------------------------------
+function lineVisibili(){
+  lineRedraw();
+  rectRedraw();
+  ellRedraw();
+}
 //--------------------------------------------------------------------------------
 //EventListener
 canvas.addEventListener("mousedown", controllaPuntino);
@@ -348,6 +515,12 @@ canvas.addEventListener("mousedown", makeDot);
 canvas.addEventListener("mousedown", startLine);
 canvas.addEventListener("mouseup", endLine);
 canvas.addEventListener("mousemove", makeLine, false);
+canvas.addEventListener("mousedown", rectStart);
+canvas.addEventListener("mouseup", rectStop);
+canvas.addEventListener("mousemove", makeRect);
+canvas.addEventListener("mousedown", ellStart);
+canvas.addEventListener("mouseup", ellStop);
+canvas.addEventListener("mousemove", makeell);
 fileInput.addEventListener("change", loadImage);
 document.querySelector('#container').oninput = function (ev) {
   if (ev.target.value) {

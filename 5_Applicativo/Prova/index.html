@@ -26,7 +26,6 @@
             background: rgba(0, 0, 255, 0.3);
         }
 
-        #canvas,
         #canvas2,
         #canvas3 {
             position: absolute;
@@ -81,6 +80,12 @@
     <input type="radio" name="Strumenti" class="tools" onchange="wichtool()">
     <label for="">Mouse</label>
     <br>
+    <input type="radio" class="tools" name="Strumenti" onchange="wichtool()">
+    <label for="">Rect</label>
+    <br>
+    <input type="radio" class="tools" name="Strumenti" onchange="wichtool()">
+    <label for="">Ellipse</label>
+    <br>
     <div id="container">
         <input type="checkbox" class="layer" checked>
         <label for="vehicle1"> Puntini</label><br>
@@ -91,15 +96,16 @@
     </div>
 
     <center>
-        <div id="wrapper">
+        <!-- <div id="wrapper"> -->
             <canvas id="canvas"></canvas> <!--Immagine-->
             <!-- <canvas id="canvas2"></canvas>Linee
             <canvas id="canvas3"></canvas>Puntini -->
-        </div>
+        <!-- </div> -->
     </center>
     <!-- <script src="./draw.js"></script> -->
     <script src="./saveImg.js"></script>
     <script src="./class.js"></script>
+    <!-- <script src="./k.js"></script> -->
 
 </body>
 
