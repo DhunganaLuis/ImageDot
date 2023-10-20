@@ -1,37 +1,68 @@
 //variabili e costanti globali
 let fileInput = document.getElementById('fileinput');
-var dotCount;
-var canDraw = false;
-var canMakePoint = true;
-var canMovePoint = false;
-var canRect = false;
-var shouldRect = false;
-var canEll = false;
-var shouldEll = false;
 let canvas = document.getElementById("canvas");
 var context = canvas.getContext('2d');
-var dotSize = 5;
-var puntini;
-var snapshot;
-var dotColor = '#000';
-var pointSelected = -1;
+
+//costanti
 const MAIN_MOUSE_BUTTON = 0;
-var shouldMove = false;
-var isSelectedPoi = false;
+
+//variabili dot
+var dotCount;
+var dotColor = '#000';
+var dotSize = 5;
+var puntini = [];
 var lastColorDot;
-var widthLine = 4;
-var linee;
-var colorLine = "#000";
-var shouldDraw = false;
+var pointSelected = -1;
+var isConnectedPoint=false;
+var isPressbtn= false;
+var isSelectedPoint = false;
+var shouldMove = false;
+var canMakePoint = true;
+var canMovePoint = false;
+
+//variabili linea
 var xLine = 0;
 var yLine = 0;
-var starDragX=0;
-var starDragY=0;
-var ImgSrc;
+var widthLine = 4;
+var colorLine = "#000";
+var linee = [];
+var canDraw = false;
+var shouldDraw = false;
+
+//variabili rettangoli
 var lastRect;
+var rectSize=5;
+var rectColor='#000'
+var canRect = false;
+var shouldRect = false;
+var rettangoli = [];
+
+//variabili ellissi
+var elltSize=5;
+var ellColor='#000'
+var canEll = false;
+var shouldEll = false;
 var lastEll;
-var rettangoli;
-var ellissi;
+var ellissi = [];
+
+//variabili segment
+var segmentSize=5;
+var segmentColor='#000'
+var canSegment=false;
+var shouldSegment=false;
+var lastSegment;
+var segments=[];
+
+//drag
+var starDragX = 0;
+var starDragY = 0;
+
+//img
+var ImgSrc;
+
+//altre variabili
+var isPressButton=false;
+
 //Classe dot 
 class Dot {
   constructor() {
@@ -110,9 +141,9 @@ function dotRedraw() {
 //funzione che inverte il numero dei puntini 
 function numberInverter() {
   if (puntini.length != 0 || puntini.length != 1) {
-    console.log("inverto");
+    // console.log("inverto");
     for (var i = puntini.length - 1; i >= 0; i--) {
-      console.log("contrario");
+      // console.log("contrario");
       puntini[i].number = puntini.length - (puntini[i].number - 1);
     }
     refreshCanvas(context);
@@ -177,6 +208,54 @@ function reorderNumber() {
   }
 
 }
+
+//funzione che connette automaticamente i puntini
+function connectDots(){
+  if(puntini.length>1){
+    if(isPressButton){
+      isConnectedPoint=true;
+      for(var i=0;i<puntini.length;i++){
+        var secondPos=(i+1)%puntini.length;
+        context.beginPath();
+        context.strokeStyle=dotColor;
+        context.moveTo(puntini[i].x,puntini[i].y);
+        context.lineTo(puntini[secondPos].x,puntini[secondPos].y);
+        context.stroke();      
+      }
+      console.log("con "+isConnectedPoint);
+      console.log("press "+ isPressbtn);
+
+    }else{
+      isConnectedPoint=false;
+      console.log("con "+isConnectedPoint);
+      console.log("press "+ isPressbtn);
+      refreshCanvas(context);
+    }
+
+  }
+}
+function pressButton(){
+  isPressButton=!isPressButton;
+  connectDots();
+}
+// function changeNumber(){
+//   console.log("entra");
+//   if(pointSelected>-1){
+//   console.log("if");
+//     var num= document.getElementById("dotNumber").value;
+//     if(num!=puntini[pointSelected].number){
+//       for(var i=0;i<puntini.length;i++){
+//         if(puntini[i].number>=num){
+//           puntini[i].number=puntini[i].number+1;
+//         }
+        
+//       }
+//       puntini[pointSelected].number=num;
+//       refreshCanvas(context);
+//     }
+//   }
+
+// }
 //------------------------------------------------------------------------------
 //classe linea
 class Line {
@@ -235,52 +314,60 @@ function lineRedraw() {
 }
 //---------------------------------------------------------------------
 //calsse Ellipse
-class Ellipse{
-  constructor(posX,posY,starX,startY){
-    this.x=posX;
-    this.y=posY;
-    this.startX=starX;
-    this.starY=startY;
+class Ellipse {
+  constructor(posX, posY, starX, startY) {
+    this.x = posX;
+    this.y = posY;
+    this.startX = starX;
+    this.starY = startY;
+    this.color = '#000';
+    this.size = 5;
   }
-  draw(context){
-    var w= this.x-this.startX;
-    var h=this.y-this.starY;
+  draw(context) {
+    var w = this.x - this.startX;
+    var h = this.y - this.starY;
     var radius = Math.sqrt(Math.pow((this.startX - this.x), 2) + Math.pow((this.starY - this.y), 2));
     context.beginPath();
+    context.lineWidth=this.size;
+    context.strokeStyle= this.color;
     context.ellipse(this.startX, this.starY, Math.abs(w), Math.abs(h), 0, 2 * Math.PI, false);
     context.stroke();
   }
-  
+
 }
 function ellStart(event) {
   if (canEll) {
-    console.log("start");
-      shouldEll = true;
-      var startDragCoo = getMousePosition(canvas, event);
-      starDragX = startDragCoo[0];
-      starDragY = startDragCoo[1];
+    // console.log("start");
+    shouldEll = true;
+    var startDragCoo = getMousePosition(canvas, event);
+    starDragX = startDragCoo[0];
+    starDragY = startDragCoo[1];
   }
 
 }
 function makeell(event) {
   if (shouldEll) {
-    console.log("drag");
-      clearCanvas(context);
-      var lastCoo = getMousePosition(canvas, event);
-      var ell = new Ellipse(lastCoo[0],lastCoo[1],starDragX,starDragY,)
-      ell.draw(context);
-      lastEll=ell;
+    // console.log("drag");
+    clearCanvas(context);
+    refreshCanvas(context);
+    var lastCoo = getMousePosition(canvas, event);
+    var ell = new Ellipse(lastCoo[0], lastCoo[1], starDragX, starDragY,);
+    lastEll = ell;
+    console.log(lastEll);
+    ell.draw(context);
   }
 
 }
 function ellStop() {
-  console.log("stop");
-  shouldEll = false;
-  ellissi.push(lastEll);
+  if(lastEll!=undefined){
+    shouldEll = false;
+    ellissi.push(lastEll);
+  }
+    
 
 }
-function ellRedraw(){
-  for(var i=0;i<ellissi.length;i++){
+function ellRedraw() {
+  for (var i = 0; i < ellissi.length; i++) {
     ellissi[i].draw(context);
   }
 }
@@ -288,93 +375,114 @@ function ellRedraw(){
 //class Rect
 class Rect {
   constructor(posX, posY, startX, starY) {
-      this.startX = startX;
-      this.starY = starY;
-      this.x = posX;
-      this.y = posY;
+    this.startX = startX;
+    this.starY = starY;
+    this.x = posX;
+    this.y = posY;
+    this.color = '#000';
+    this.size = 5;
   }
   draw(context) {
-      var w = this.x - this.startX;
-      var h = this.y - this.starY;
-      context.beginPath();
-      context.rect(this.startX, this.starY, w, h);
-      context.stroke();
-      console.log("draw");
+    var w = this.x - this.startX;
+    var h = this.y - this.starY;
+    context.beginPath();
+    context.lineWidth=this.size;
+    context.strokeStyle=this.color;
+    context.rect(this.startX, this.starY, w, h);
+    context.stroke();
+    // console.log("draw");
   }
 
 }
 function rectStart(event) {
-  console.log(canRect);
+  // console.log(canRect);
   if (canRect) {
-    console.log("start");
-      shouldRect = true;
-      var startDragCoo = getMousePosition(canvas, event);
-      starDragX = startDragCoo[0];
-      starDragY = startDragCoo[1];
+    // console.log("start");
+    shouldRect = true;
+    var startDragCoo = getMousePosition(canvas, event);
+    starDragX = startDragCoo[0];
+    starDragY = startDragCoo[1];
   }
 
 }
 function makeRect(event) {
   if (shouldRect) {
-    console.log("drag");
-      clearCanvas(context);
-      var lastCoo = getMousePosition(canvas, event);
-      var rettangolo = new Rect(lastCoo[0], lastCoo[1], starDragX, starDragY);
-      rettangolo.draw(context);
-      lastRect=rettangolo;
+    // console.log("drag");
+    clearCanvas(context);
+    refreshCanvas(context);
+    var lastCoo = getMousePosition(canvas, event);
+    var rettangolo = new Rect(lastCoo[0], lastCoo[1], starDragX, starDragY);
+    rettangolo.draw(context);
+    lastRect = rettangolo;
   }
 
 }
 function rectStop() {
-  console.log("stop");
-  shouldRect = false;
-  rettangoli.push(lastRect);
+  if(lastRect!=undefined){
+    shouldRect = false;
+    rettangoli.push(lastRect);
+  }
+
 }
 function rectRedraw(){
   for(var i=0;i<rettangoli.length;i++){
     rettangoli[i].draw(context);
   }
 }
+
 //-------------------------------------------------------------------------
-// class line{
-//   constructor(posX,posY,starX,starY){
-//     this.x=posX;
-//     this.y=posY;
-//     this.startX=starX;
-//     this.starY=starDragY;
-//   }
-//   draw(context){
-//     context.beginPath();
-//     context.moveTo(this.startX,this.starY);
-//     context.line(this.x,this.x);
-//     context.stroke();
-//   }
+//classe segment
+class Segment{
+  constructor(posX,posY,starX,starY){
+    this.x=posX;
+    this.y=posY;
+    this.startX=starX;
+    this.starY=starY;
+    this.color = '#000';
+    this.size = 5;
+  }
+  draw(context){
+    context.beginPath();
+    context.lineWidth=this.size;
+    context.strokeStyle=this.color;
+    context.moveTo(this.startX,this.starY);
+    context.lineTo(this.x,this.y);
+    context.stroke();
+  }
 
-// }
-// function LineStart(event) {
-//   console.log(canLine);
-//   if (canLine) {
-//     console.log("start");
-//       shouldLine = true;
-//       var startDragCoo = getMousePosition(canvas, event);
-//       starDragX = startDragCoo[0];
-//       starDragY = startDragCoo[1];
-//   }
+}
+function segmentStart(event) {
+  if (canSegment) {
+    // console.log("start");
+      shouldSegment = true;
+      var startDragCoo = getMousePosition(canvas, event);
+      starDragX = startDragCoo[0];
+      starDragY = startDragCoo[1];
+  }
 
-// }
-// function makeLineDritta(event) {
-//   if (shouldLine) {
-//     console.log("drag");
-//       clearCanvas(context);
-//       var lastCoo = getMousePosition(canvas, event);
-//       var line= new
-//   }
-
-// }
-// function LineStop() {
-//   console.log("stop");
-//   shouldLine = false;
-// }
+}
+function makeSegment(event) {
+  if (shouldSegment) {
+    // console.log("drag");
+      clearCanvas(context);
+      refreshCanvas(context);
+      var lastCoo = getMousePosition(canvas, event);
+      var segment= new Segment(lastCoo[0],lastCoo[1],starDragX,starDragY);
+      segment.draw(context);
+      lastSegment=segment;
+  }
+}
+function segmentStop() {
+  if(lastSegment!=undefined){
+    shouldSegment = false;
+    segments.push(lastSegment);
+  }
+}
+function segmentRedraw(){
+  for(var i=0;i<segments.length;i++){
+    segments[i].draw(context);
+  }
+}
 
 //--------------------------------------------------------------------------------
 // funzione che pulisce il canvas
@@ -406,27 +514,31 @@ function scriviGrandezza() {
 function refreshCanvas(context) {
   var checkboxes = document.getElementsByClassName("layer");
   clearCanvas(context);
+  wichtool();
   if (checkboxes[0].checked) {
     dotRedraw();
-    // wichtool();
-  }else{
-    canMakePoint=false;
+    if(isConnectedPoint){
+      connectDots();
+    }
+  } else {
+    canMakePoint = false;
   }
   if (checkboxes[1].checked) {
     lineVisibili();
-    // wichtool();
-  }else{
-    canDraw= false;
+  } else {
+    canDraw = false;
   }
   if (checkboxes[2].checked) {
-    canvas.style.backgroundImage = ImgSrc;
-    canvas.style.backgroundSize = 'contain';
+
+      canvas.style.backgroundImage = ImgSrc;
+      canvas.style.backgroundSize = 'contain';
   } else {
     canvas.style.background = "#fff";
   }
 
 
 }
+var f= false;
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //Loafd Image
 //Mostra l'immagine scelta dall'utente
@@ -443,11 +555,14 @@ function loadImage(ev) {
       image.src = e.target.result;
       image.onload = function () {
         var canvas = document.getElementById('canvas');
-        ImgSrc = 'url("' + this.src + '") ';
         canvas.style.backgroundImage = 'url("' + this.src + '") ';
+        ImgSrc = canvas.style.backgroundImage;
+        // console.log(ImgSrc);
         canvas.style.backgroundSize = 'contain';
         canvas.width = this.width;
         canvas.height = this.height;
+        document.getElementById("container").style.display='block';
+        
       }
     }
     reader.readAsDataURL(file);
@@ -459,9 +574,9 @@ function loadImage(ev) {
 //funzione che inverte il numero dei puntini 
 function numberInverter() {
   if (puntini.length != 0 || puntini.length != 1) {
-    console.log("inverto");
+    // console.log("inverto");
     for (var i = puntini.length - 1; i >= 0; i--) {
-      console.log("contrario");
+      // console.log("contrario");
       puntini[i].number = puntini.length - (puntini[i].number - 1);
     }
     refreshCanvas(context);
@@ -473,38 +588,82 @@ function numberInverter() {
 //controllo scelta dell'utente
 function wichtool() {
   var isChecked = document.getElementsByClassName("tools");
-  console.log(isChecked);
+  var numDisp=document.getElementById("selectNum");
+  // console.log(isChecked);
   if (isChecked[0].checked) {
     canMakePoint = true;
     canDraw = false;
     canMovePoint = false;
+    canEll = false;
+    canRect = false;
+    canSegment=false;
+    numDisp.style.display='none';
   } else if (isChecked[1].checked) {
     canMakePoint = false;
     canDraw = true;
     canMovePoint = false;
+    canRect = false;
+    canEll = false;
+    canSegment=false;
+    numDisp.style.display='none';
+
   } else if (isChecked[2].checked) {
     canMakePoint = false;
     canDraw = false;
     canMovePoint = true;
-  } else if(isChecked[3].checked){
+    canEll = false;
+    canRect = false;
+    canSegment=false;
+    numDisp.style.display='none';
+    if(puntini.length>1){
+      numDisp.style.display='block';
+      document.getElementById("dotNumber").setAttribute("max",puntini.length);
+    }
+
+  } else if (isChecked[3].checked) {
     canMakePoint = false;
     canDraw = false;
     canMovePoint = false;
-    canRect=true;
-  }else if(isChecked[4].checked){
+    canRect = true;
+    canEll = false;
+    canSegment=false;
+    numDisp='none';
+
+  } else if (isChecked[4].checked) {
     canMakePoint = false;
     canDraw = false;
     canMovePoint = false;
-    canRect=false;
-    canEll=true;
+    canRect = false;
+    canEll = true;
+    canSegment=false;
+    numDisp='none';
+
+  }else if(isChecked[5].checked){
+    canSegment=true;
+    canMakePoint = false;
+    canDraw = false;
+    canMovePoint = false;
+    canRect = false;
+    canEll = false;
+    numDisp='none';
+
   }
   // console.log(canMovePoint);
 }
 //-------------------------------------------------------------------------------
-function lineVisibili(){
-  lineRedraw();
-  rectRedraw();
-  ellRedraw();
+function lineVisibili() {
+  if (linee.length != 0) {
+    lineRedraw();
+  }
+  if (rettangoli.length != 0) {
+    rectRedraw();
+  }
+  if (ellissi.length != 0) {
+    ellRedraw();
+  }
+  if(segments.length!=0){
+    segmentRedraw();
+  }
 }
 //--------------------------------------------------------------------------------
 //EventListener
@@ -521,6 +680,9 @@ canvas.addEventListener("mousemove", makeRect);
 canvas.addEventListener("mousedown", ellStart);
 canvas.addEventListener("mouseup", ellStop);
 canvas.addEventListener("mousemove", makeell);
+canvas.addEventListener("mousedown", segmentStart);
+canvas.addEventListener("mouseup", segmentStop);
+canvas.addEventListener("mousemove", makeSegment);
 fileInput.addEventListener("change", loadImage);
 document.querySelector('#container').oninput = function (ev) {
   if (ev.target.value) {

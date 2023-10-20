@@ -50,6 +50,9 @@
         #selectNum{
             display: none;
         }
+        #container{
+            display: none;
+        }
     </style>
 </head>
 
@@ -59,8 +62,11 @@
     <input type="button" value="salva" onclick="saveDotImage()">
     <input type="button" value="Delete position" onclick="deletePoint()">
     <input type="button" value="inverti numeri" onclick="numberInverter()" id="b">
+    <input type="button" value="connect dot" onclick="pressButton()">
+    
     <div id="selectNum">
         <span>numero puntino: </span><input type="number" id="dotNumber" min="1" onKeyDown="return false">
+        <input type="button" value="invia" onclick="changeNumber()">
     </div>
     <br>
     <span>Dot size:</span>
@@ -75,7 +81,7 @@
     <label for="">puntino</label>
     <br>
     <input type="radio" name="Strumenti" class="tools" onchange="wichtool()">
-    <label for="penna">penna</label>
+    <label for="">penna</label>
     <br>
     <input type="radio" name="Strumenti" class="tools" onchange="wichtool()">
     <label for="">Mouse</label>
@@ -85,6 +91,9 @@
     <br>
     <input type="radio" class="tools" name="Strumenti" onchange="wichtool()">
     <label for="">Ellipse</label>
+    <br>
+    <input type="radio" class="tools" name="Strumenti" onchange="wichtool()">
+    <label for="">Segment</label>
     <br>
     <div id="container">
         <input type="checkbox" class="layer" checked>
@@ -108,5 +117,4 @@
     <!-- <script src="./k.js"></script> -->
 
 </body>
-
 </html>
