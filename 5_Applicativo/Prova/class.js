@@ -70,6 +70,9 @@ class Dot {
     this.y = 0;
     this.number = null;
     this.color = '#000';
+    this.border ="#000";
+    this.widthLabel=0;
+    this.widthDot=0;
     this.size = 5;
   }
   draw(context) {
@@ -85,18 +88,24 @@ class Dot {
     var pointY = Math.round(this.y);
 
     context.beginPath();
+    // context.lineWidth=this.widthDot;
     context.fillStyle = this.color;
+    // context.strokeStyle= this.borderSel;
     context.arc(pointX, pointY, this.size, 0 * Math.PI, 2 * Math.PI);
+    // context.stroke();
     context.fill();
 
     if (this.number) {
       var textX = pointX;
       var textY = Math.round(pointY - this.size - 3);
       var fontSize = (16 / 5) * this.size;
+      context.strokeStyle = this.borderSel;
       context.font = `Italic ${fontSize}px Arial`;
-      context.fillStyle = this.color;
+      // context.fillStyle = this.color;
+      // context.lineWidth=this.widthLabel;
       context.textAlign = 'center';
       context.fillText(this.number, textX, textY);
+      // context.strokeText(this.number,textX,textY);
     }
   }
 }
@@ -108,7 +117,7 @@ function makeDot(event) {
     var dot = new Dot();
     dot.x = coo[0];
     dot.y = coo[1];
-    dot.size = dotSize;
+    dot.size=dotSize;
     dot.number = dotCount;
     dot.color = dotColor;
     puntini.push(dot);
@@ -119,15 +128,17 @@ function makeDot(event) {
 
 //Funzione che prende la grandezza del puntino 
 function getDotSize() {
-  dotSize = document.getElementById("dimensione").value;
   var grandezza = document.getElementById("dimensione").value;
+  dotSize = grandezza;
   document.getElementById("value").innerHTML = grandezza;
+  setDotSize();
 }
 
 //Funzione che prende il colore del puntino 
 function getDotColor() {
   var colore = document.getElementById('colore').value;
   dotColor = colore;//-->Se non si uas per altro si puo semplificare richiamando solo getcolor
+  setDotColor();
 }
 
 //funzione che ridisegna i puntini sul canvas
@@ -159,15 +170,26 @@ function controllaPuntino(event) {
       if (Math.abs(puntini[i].x - pos[0]) < dotSize && Math.abs(puntini[i].y - pos[1]) < dotSize) {
         if (pointSelected > -1) {
           puntini[pointSelected].color = lastColorDot;
+          // puntini[pointSelected].borderSel=lastColorDot;
+          // puntini[i].widthDot=0;
+          // puntini[i].widthLabel=0;
+
         }
         lastColorDot = puntini[i].color;
         puntini[i].color = "#4AA8F4";
+        // puntini[i].borderSel="#ff0000";
+        // puntini[i].widthDot=3;
+        // puntini[i].widthLabel=1;
         pointSelected = i;
         shouldMove = true;
         break;
       } else {
         if (pointSelected > -1) {
           puntini[pointSelected].color = lastColorDot;
+          puntini[pointSelected].borderSel=lastColorDot;
+          puntini[i].widthDot=0;
+          puntini[i].widthLabel=0;
+
           pointSelected = -1;
         }
       }
@@ -218,6 +240,7 @@ function connectDots(){
         var secondPos=(i+1)%puntini.length;
         context.beginPath();
         context.strokeStyle=dotColor;
+        context.lineWidth=5;
         context.moveTo(puntini[i].x,puntini[i].y);
         context.lineTo(puntini[secondPos].x,puntini[secondPos].y);
         context.stroke();      
@@ -238,24 +261,26 @@ function pressButton(){
   isPressButton=!isPressButton;
   connectDots();
 }
-// function changeNumber(){
-//   console.log("entra");
-//   if(pointSelected>-1){
-//   console.log("if");
-//     var num= document.getElementById("dotNumber").value;
-//     if(num!=puntini[pointSelected].number){
-//       for(var i=0;i<puntini.length;i++){
-//         if(puntini[i].number>=num){
-//           puntini[i].number=puntini[i].number+1;
-//         }
-        
-//       }
-//       puntini[pointSelected].number=num;
-//       refreshCanvas(context);
-//     }
-//   }
 
-// }
+function setDotSize(){
+  if(puntini!=0){
+    for(var i=0; i<puntini.length;i++){
+      puntini[i].size= dotSize;
+    }
+    refreshCanvas(context);
+  }
+}
+function setDotColor(){
+  if(puntini!=0){
+    for(var i=0; i<puntini.length;i++){
+      puntini[i].color= dotColor;
+    }
+    refreshCanvas(context);
+  }
+}
+function changeDotNumber(){
+  
+}
 //------------------------------------------------------------------------------
 //classe linea
 class Line {
@@ -321,7 +346,7 @@ class Ellipse {
     this.startX = starX;
     this.starY = startY;
     this.color = '#000';
-    this.size = 5;
+    this.size = 30;
   }
   draw(context) {
     var w = this.x - this.startX;
@@ -337,8 +362,7 @@ class Ellipse {
 }
 function ellStart(event) {
   if (canEll) {
-    // console.log("start");
-    shouldEll = true;
+        shouldEll = true;
     var startDragCoo = getMousePosition(canvas, event);
     starDragX = startDragCoo[0];
     starDragY = startDragCoo[1];
@@ -430,6 +454,17 @@ function rectRedraw(){
   }
 }
 
+function controllaRect(){
+  if(canMovePoint){
+    var pos = getMousePosition(canvas, event);
+    for(var i=0;i<rettangoli;i++){
+      // if(){
+
+      // }
+    }
+  }
+}
+
 //-------------------------------------------------------------------------
 //classe segment
 class Segment{
@@ -495,6 +530,7 @@ function getMousePosition(canvas, event) {
   let rect = canvas.getBoundingClientRect();
   let scaleX = canvas.width / rect.width;
   let scaleY = canvas.height / rect.height;
+  console.log(scaleX+" "+ scaleY);
   let x = Math.round((event.x - rect.left) * scaleX);
   let y = Math.round((event.y - rect.top) * scaleY);
   var coordinate = [x, y];
@@ -532,6 +568,7 @@ function refreshCanvas(context) {
 
       canvas.style.backgroundImage = ImgSrc;
       canvas.style.backgroundSize = 'contain';
+      // context.drawImage(ImgSrc,0,0)
   } else {
     canvas.style.background = "#fff";
   }
@@ -557,7 +594,7 @@ function loadImage(ev) {
         var canvas = document.getElementById('canvas');
         canvas.style.backgroundImage = 'url("' + this.src + '") ';
         ImgSrc = canvas.style.backgroundImage;
-        // console.log(ImgSrc);
+        console.log(ImgSrc);
         canvas.style.backgroundSize = 'contain';
         canvas.width = this.width;
         canvas.height = this.height;
