@@ -70,9 +70,9 @@ class Dot {
     this.y = 0;
     this.number = null;
     this.color = '#000';
-    this.border ="#000";
-    this.widthLabel=0;
-    this.widthDot=0;
+    // this.border ="#000";
+    // this.widthLabel=0;
+    // this.widthDot=0;
     this.size = 5;
   }
   draw(context) {
@@ -187,8 +187,8 @@ function controllaPuntino(event) {
         if (pointSelected > -1) {
           puntini[pointSelected].color = lastColorDot;
           puntini[pointSelected].borderSel=lastColorDot;
-          puntini[i].widthDot=0;
-          puntini[i].widthLabel=0;
+          // puntini[i].widthDot=0;
+          // puntini[i].widthLabel=0;
 
           pointSelected = -1;
         }
@@ -279,7 +279,27 @@ function setDotColor(){
   }
 }
 function changeDotNumber(){
-  
+  if(pointSelected>-1){
+    var numero= prompt("Inserire il numero che si vuole dare al puntino");
+    if(isNaN(numero)){
+      alert("ATTENZIONE: Inserire solo numeri interi");
+    }else{
+      var dot= new Dot();
+      dot.x= puntini[pointSelected].x;
+      dot.y= puntini[pointSelected].y;
+      dot.size= puntini[pointSelected].size;
+      dot.color= puntini[pointSelected].color;
+      dot.number= numero;
+      puntini.splice(pointSelected,1);
+      puntini.splice(numero-1,0,dot);
+      for(var i=0; i<puntini.length;i++){
+        puntini[i].number=i+1;
+      }
+      pointSelected= numero-1;
+    }
+    refreshCanvas(context);
+    console.log(puntini);
+  }
 }
 //------------------------------------------------------------------------------
 //classe linea
@@ -702,6 +722,8 @@ function lineVisibili() {
     segmentRedraw();
   }
 }
+//--------------------------------------------------------------------------------
+
 //--------------------------------------------------------------------------------
 //EventListener
 canvas.addEventListener("mousedown", controllaPuntino);
