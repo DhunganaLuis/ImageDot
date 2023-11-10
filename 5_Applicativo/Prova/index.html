@@ -57,13 +57,18 @@
 </head>
 
 <body>
-    <input type="file" id="fileinput" accept="image/*">
+    <input type="file" id="fileinput" accept=".jpg, jpeg, .png, .webp">
     <input type="color" id="colore" oninput="getDotColor()">
     <input type="button" value="salva" onclick="saveDotImage()">
     <input type="button" value="Delete position" onclick="deletePoint()">
     <input type="button" value="inverti numeri" onclick="numberInverter()" id="b">
     <input type="button" value="connect dot" onclick="pressButton()">
     <input type="button" value="prova" onclick="changeDotNumber()">
+    <input type="text" id="nameImg">
+    <select id="formatImg">
+        <option value="png">PNG</option>
+        <option value="svg">SVG</option>
+    </select>
     <div id="selectNum">
         <span>numero puntino: </span><input type="number" id="dotNumber" min="1" onKeyDown="return false">
         <input type="button" value="invia" onclick="changeNumber()">
@@ -111,10 +116,8 @@
             <canvas id="canvas3"></canvas>Puntini -->
         <!-- </div> -->
     </center>
-    <!-- <script src="./draw.js"></script> -->
     <script src="./saveImg.js"></script>
     <script src="./class.js"></script>
-    <!-- <script src="./k.js"></script> -->
 
 </body>
 </html>

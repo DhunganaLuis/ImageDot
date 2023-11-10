@@ -1,5 +1,6 @@
 //variabili e costanti globali
-let fileInput = document.getElementById('fileinputelect');
+let fileInput = document.getElementById('fileinput');
+let fileselector= document.getElementById('fileinputelect');
 let canvas = document.getElementById("canvas");
 var context = canvas.getContext('2d');
 
@@ -600,7 +601,7 @@ function loadImage(ev) {
     dotCount = 1;
     puntini = [];
     linee = [];
-    refreshCanvas(context);
+    // refreshCanvas(context);
     let file = ev.target.files[0];
     var reader = new FileReader();
     reader.onloadend = function (e) {
@@ -610,7 +611,6 @@ function loadImage(ev) {
         var canvas = document.getElementById('canvas');
         canvas.style.backgroundImage = 'url("' + this.src + '") ';
         ImgSrc = canvas.style.backgroundImage;
-        //console.log(ImgSrc);
         canvas.style.backgroundSize = 'contain';
         canvas.width = this.width;
         canvas.height = this.height;
@@ -725,8 +725,11 @@ canvas.addEventListener("mousedown", segmentStart);
 canvas.addEventListener("mouseup", segmentStop);
 canvas.addEventListener("mousemove", makeSegment);
 fileInput.addEventListener("change",loadImage);
-document.querySelector('#container').oninput = function (ev) {
-  if (ev.target.value) {
-    refreshCanvas(context);
-  }
-}
+fileselector.addEventListener("click", function(){
+  fileInput.click();
+});
+// document.querySelector('#container').oninput = function (ev) {
+//   if (ev.target.value) {
+//     refreshCanvas(context);
+//   }
+// }
