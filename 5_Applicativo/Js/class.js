@@ -1,6 +1,5 @@
 //variabili e costanti globali
 let fileInput = document.getElementById('fileinput');
-let fileselector= document.getElementById('fileinputelect');
 let canvas = document.getElementById("canvas");
 var context = canvas.getContext('2d');
 
@@ -14,12 +13,11 @@ var dotSize = 5;
 var puntini = [];
 var lastColorDot;
 var pointSelected = -1;
-var isConnectedPoint=false;
-var isPressbtn= false;
+var isConnectedPoint = false;
+var isPressbtn = false;
 var isSelectedPoint = false;
 var shouldMove = false;
-var canMakePoint = true;
-var canMovePoint = false;
+var canMakePoint = false;
 
 //variabili linea
 var xLine = 0;
@@ -31,28 +29,31 @@ var canDraw = false;
 var shouldDraw = false;
 
 //variabili rettangoli
-var lastRect;
-var rectSize=5;
-var rectColor='#000'
+var lastRect=undefined;
+var rectSize = 5;
+var rectColor = '#000'
 var canRect = false;
 var shouldRect = false;
 var rettangoli = [];
+rectSelected = -1;
+var lastColorRect;
+var shouldMoveRect = false;
 
 //variabili ellissi
-var elltSize=5;
-var ellColor='#000'
+var ellSize = 5;
+var ellColor = '#000'
 var canEll = false;
 var shouldEll = false;
 var lastEll;
 var ellissi = [];
 
 //variabili segment
-var segmentSize=5;
-var segmentColor='#000'
-var canSegment=false;
-var shouldSegment=false;
+var segmentSize = 5;
+var segmentColor = '#000'
+var canSegment = false;
+var shouldSegment = false;
 var lastSegment;
-var segments=[];
+var segments = [];
 
 //drag
 var starDragX = 0;
@@ -62,7 +63,8 @@ var starDragY = 0;
 var ImgSrc;
 
 //altre variabili
-var isPressButton=false;
+var isPressButton = false;
+var canMove = false;
 
 //Classe dot 
 class Dot {
@@ -118,7 +120,7 @@ function makeDot(event) {
     var dot = new Dot();
     dot.x = coo[0];
     dot.y = coo[1];
-    dot.size=dotSize;
+    dot.size = dotSize;
     dot.number = dotCount;
     dot.color = dotColor;
     puntini.push(dot);
@@ -166,17 +168,18 @@ function numberInverter(ref) {
 }
 //selezionamento, rimozione e spostamento dei puntini
 function controllaPuntino(event) {
-  if (canMovePoint) {
+  if (canMove) {
     var pos = getMousePosition(canvas, event);
     for (var i = 0; i < puntini.length; i++) {
       if (Math.abs(puntini[i].x - pos[0]) < dotSize && Math.abs(puntini[i].y - pos[1]) < dotSize) {
-        if (pointSelected > -1) {
-          puntini[pointSelected].color = lastColorDot;
+        // if (pointSelected > -1) {
+         unselect(false);
+          // puntini[pointSelected].color = lastColorDot;
           // puntini[pointSelected].borderSel=lastColorDot;
           // puntini[i].widthDot=0;
           // puntini[i].widthLabel=0;
 
-        }
+        // }
         lastColorDot = puntini[i].color;
         puntini[i].color = "#4AA8F4";
         // puntini[i].borderSel="#ff0000";
@@ -186,23 +189,27 @@ function controllaPuntino(event) {
         shouldMove = true;
         break;
       } else {
-        if (pointSelected > -1) {
-          puntini[pointSelected].color = lastColorDot;
-          puntini[pointSelected].borderSel=lastColorDot;
+        unselect(true);
+        // if (pointSelected > -1) {
+         
+          //puntini[pointSelected].color = lastColorDot;
+         // puntini[pointSelected].borderSel = lastColorDot;
           // puntini[i].widthDot=0;
           // puntini[i].widthLabel=0;
 
-          pointSelected = -1;
-        }
+          // pointSelected = -1;
+        // }
       }
     }
     refreshCanvas(context);
+    // console.log("dot: "+pointSelected);
+
   }
 }
 
 //funzione che muove i puntini
 function movePoint(event) {
-  if (shouldMove) {
+  if (shouldMove && pointSelected>-1) {
     var coo = getMousePosition(canvas, event);
     puntini[pointSelected].x = coo[0];
     puntini[pointSelected].y = coo[1];
@@ -223,6 +230,10 @@ function deletePoint() {
     pointSelected = -1;
     reorderNumber();
     refreshCanvas(context);
+  }else if(rectSelected>-1){
+    rettangoli.splice(rectSelected,1);
+    rectSelected=-1;
+    refreshCanvas(context);
   }
 }
 //funzione che riordina i numeri dei puntini 
@@ -234,76 +245,93 @@ function reorderNumber() {
 }
 
 //funzione che connette automaticamente i puntini
-function connectDots(){
-  if(puntini.length>1){
-    if(isPressButton){
-      isConnectedPoint=true;
-        for(var i=0;i<puntini.length;i++){
-          var secondPos=(i+1)%puntini.length;
-          context.beginPath();
-          context.strokeStyle=dotColor;
-          context.lineWidth=1;
-          context.moveTo(puntini[i].x,puntini[i].y);
-          context.lineTo(puntini[secondPos].x,puntini[secondPos].y);
-          context.stroke();      
-         }
-    }else{
-      isConnectedPoint=false;
+function connectDots() {
+  if (puntini.length > 1) {
+    if (isPressButton) {
+      isConnectedPoint = true;
+      for (var i = 0; i < puntini.length; i++) {
+        var secondPos = (i + 1) % puntini.length;
+        context.beginPath();
+        context.strokeStyle = dotColor;
+        context.lineWidth = 1;
+        context.moveTo(puntini[i].x, puntini[i].y);
+        context.lineTo(puntini[secondPos].x, puntini[secondPos].y);
+        context.stroke();
+      }
+    } else {
+      isConnectedPoint = false;
       refreshCanvas(context);
     }
 
   }
 }
-function pressButton(){
-  isPressButton=!isPressButton;
-  connectDots();
+function pressButton() {
+  if (puntini.length > 1) {
+    isPressButton = !isPressButton;
+    connectDots();
+  }
 }
 
-function setDotSize(){
-  if(puntini!=0){
-    for(var i=0; i<puntini.length;i++){
-      puntini[i].size= dotSize;
+function setDotSize() {
+  if (puntini != 0) {
+    for (var i = 0; i < puntini.length; i++) {
+      puntini[i].size = dotSize;
     }
     refreshCanvas(context);
   }
 }
-function setDotColor(){
-  if(puntini!=0){
-    for(var i=0; i<puntini.length;i++){
-      puntini[i].color= dotColor;
+function setDotColor() {
+  if (puntini != 0) {
+    for (var i = 0; i < puntini.length; i++) {
+      puntini[i].color = dotColor;
     }
     refreshCanvas(context);
   }
 }
-function changeDotNumber(){
-  if(pointSelected>-1){
-    var numero= prompt("Inserire il numero che si vuole dare al puntino");
-    if(isNaN(numero)){
+function changeDotNumber() {
+  if (pointSelected > -1) {
+    var numero = prompt("Inserire il numero che si vuole dare al puntino");
+    if (isNaN(numero)) {
       alert("ATTENZIONE: Inserire solo numeri interi");
-    }else{
-      var dot= new Dot();
-      dot.x= puntini[pointSelected].x;
-      dot.y= puntini[pointSelected].y;
-      dot.size= puntini[pointSelected].size;
-      dot.color= puntini[pointSelected].color;
-      dot.number= numero;
-      puntini.splice(pointSelected,1);
-      puntini.splice(numero-1,0,dot);
-      for(var i=0; i<puntini.length;i++){
-        puntini[i].number=i+1;
+    } else {
+      var dot = new Dot();
+      dot.x = puntini[pointSelected].x;
+      dot.y = puntini[pointSelected].y;
+      dot.size = puntini[pointSelected].size;
+      dot.color = puntini[pointSelected].color;
+      dot.number = numero;
+      puntini.splice(pointSelected, 1);
+      puntini.splice(numero - 1, 0, dot);
+      for (var i = 0; i < puntini.length; i++) {
+        puntini[i].number = i + 1;
       }
-      pointSelected= numero-1;
+      pointSelected = numero - 1;
     }
     refreshCanvas(context);
-    console.log(puntini);
+    // console.log(puntini);
+  }
+}
+function unselect(reset){
+  if(pointSelected >-1){
+    puntini[pointSelected].color=lastColorDot;
+    if(reset){
+      pointSelected = -1;
+    }
+    refreshCanvas(context);
+  }else if(rectSelected>-1){
+    rettangoli[rectSelected].color=lastColorRect;
+    if(reset){
+      rectSelected=-1;
+    }
+    refreshCanvas(context);
   }
 }
 //------------------------------------------------------------------------------
 //classe linea
 class Line {
-  constructor(startX, starY, endX, endY) {
+  constructor(startX, startY, endX, endY) {
     this.startX = startX;
-    this.starY = starY;
+    this.startY = startY;
     this.endX = endX;
     this.endY = endY;
     this.size = 4;
@@ -315,7 +343,7 @@ class Line {
     context.lineWidth = this.size;
     context.strokeStyle = this.color;
     context.beginPath();
-    context.moveTo(this.startX, this.starY);
+    context.moveTo(this.startX, this.startY);
     context.lineTo(this.endX, this.endY);
     context.stroke();
   }
@@ -335,7 +363,7 @@ function makeLine(event) {
     var lastCoo = getMousePosition(canvas, event);
     var linea = new Line(xLine, yLine, lastCoo[0], lastCoo[1]);
     linea.size = widthLine;
-    line.color = colorLine;
+    linea.color = colorLine;
     linea.draw(context);
     linee.push(linea);
     xLine = lastCoo[0];
@@ -354,32 +382,67 @@ function lineRedraw() {
     linee[i].draw(context);
   }
 }
+function getLineSize() {
+  var grandezza = document.getElementById("penSize").value;
+  widthLine = grandezza;
+  document.getElementById("Pen-size-value").innerHTML = grandezza;
+  setLineSize();
+}
+function setLineSize() {
+  if (linee != 0) {
+    for (var i = 0; i < linee.length; i++) {
+      linee[i].size = widthLine;
+    }
+    refreshCanvas(context);
+  }
+}
+function getLineColor() {
+  var color = document.getElementById("penColor").value;
+  colorLine = color;
+  setLineColor();
+}
+function setLineColor() {
+  if (linee != 0) {
+    for (var i = 0; i < linee.length; i++) {
+      linee[i].color = colorLine;
+    }
+    refreshCanvas(context);
+  }
+}
+function clearAllLine(context){
+  if(linee!=0){
+    linee=[];
+  refreshCanvas(context);
+  }
+}
 //---------------------------------------------------------------------
 //calsse Ellipse
 class Ellipse {
-  constructor(posX, posY, starX, startY) {
-    this.x = posX;
-    this.y = posY;
-    this.startX = starX;
-    this.starY = startY;
-    this.color = '#000';
+  constructor(startX, startY,w,h) {
+    // this.x = posX;
+    // this.y = posY;
+    this.startX = startX;
+    this.startY = startY;
+    this.color = '#000000';
     this.size = 5;
+    this.w=w;
+    this.h=h;
   }
   draw(context) {
-    var w = this.x - this.startX;
-    var h = this.y - this.starY;
-    var radius = Math.sqrt(Math.pow((this.startX - this.x), 2) + Math.pow((this.starY - this.y), 2));
+    // var w = this.x - this.startX;
+    // var h = this.y - this.starY;
+    // var radius = Math.sqrt(Math.pow((this.startX - this.x), 2) + Math.pow((this.starY - this.y), 2));
     context.beginPath();
-    context.lineWidth=this.size;
-    context.strokeStyle= this.color;
-    context.ellipse(this.startX, this.starY, Math.abs(w), Math.abs(h), 0, 2 * Math.PI, false);
+    context.lineWidth = this.size;
+    context.strokeStyle = this.color;
+    context.ellipse(this.startX, this.startY, Math.abs(this.w), Math.abs(this.h), 0, 2 * Math.PI, false);
     context.stroke();
   }
 
 }
 function ellStart(event) {
   if (canEll) {
-        shouldEll = true;
+    shouldEll = true;
     var startDragCoo = getMousePosition(canvas, event);
     starDragX = startDragCoo[0];
     starDragY = startDragCoo[1];
@@ -392,19 +455,23 @@ function makeell(event) {
     clearCanvas(context);
     refreshCanvas(context);
     var lastCoo = getMousePosition(canvas, event);
-    var ell = new Ellipse(lastCoo[0], lastCoo[1], starDragX, starDragY,);
+    var w= lastCoo[0]- starDragX;
+    var h= lastCoo[1]- starDragY;
+    var ell = new Ellipse(starDragX, starDragY,w,h);
+    ell.size = ellSize;
+    ell.color = ellColor;
     lastEll = ell;
-    console.log(lastEll);
+    // console.log(lastEll);
     ell.draw(context);
   }
 
 }
 function ellStop() {
-  if(lastEll!=undefined){
+  if (lastEll != undefined) {
     shouldEll = false;
     ellissi.push(lastEll);
   }
-    
+
 
 }
 function ellRedraw() {
@@ -412,24 +479,54 @@ function ellRedraw() {
     ellissi[i].draw(context);
   }
 }
+function getEllSize() {
+  var grandezza = document.getElementById("ellSize").value;
+  ellSize = grandezza;
+  document.getElementById("Ell-size-value").innerHTML = grandezza;
+  setEllSize();
+
+}
+function setEllSize() {
+  if (ellissi != 0) {
+    for (var i = 0; i < ellissi.length; i++) {
+      ellissi[i].size = ellSize;
+    }
+    refreshCanvas(context);
+  }
+}
+function getEllColor() {
+  var color = document.getElementById("ellColor").value;
+  ellColor = color;
+  setEllColor();
+}
+function setEllColor() {
+  if (ellissi != 0) {
+    for (var i = 0; i < ellissi.length; i++) {
+      ellissi[i].color = ellColor;
+    }
+    refreshCanvas(context);
+  }
+}
 //--------------------------------------------------------------------------
 //class Rect
 class Rect {
-  constructor(posX, posY, startX, starY) {
+  constructor(w, h, startX, startY) {
     this.startX = startX;
-    this.starY = starY;
-    this.x = posX;
-    this.y = posY;
+    this.startY = startY;
+    // this.x = posX;
+    // this.y = posY;
     this.color = '#000';
     this.size = 5;
+    this.w=w;
+    this.h=h;
   }
   draw(context) {
-    var w = this.x - this.startX;
-    var h = this.y - this.starY;
+    //  this.w = this.x - this.startX;
+    //  this.h = this.y - this.starY;
     context.beginPath();
-    context.lineWidth=this.size;
-    context.strokeStyle=this.color;
-    context.rect(this.startX, this.starY, w, h);
+    context.lineWidth = this.size;
+    context.strokeStyle = this.color;
+    context.rect(this.startX, this.startY, this.w, this.h);
     context.stroke();
     // console.log("draw");
   }
@@ -446,93 +543,193 @@ function rectStart(event) {
   }
 
 }
+
 function makeRect(event) {
   if (shouldRect) {
-    // console.log("drag");
-   // clearCanvas(context);
     refreshCanvas(context);
     var lastCoo = getMousePosition(canvas, event);
-    var rettangolo = new Rect(lastCoo[0], lastCoo[1], starDragX, starDragY);
+    var rectW = lastCoo[0] - starDragX;
+    var rectH = lastCoo[1] - starDragY;
+    var rettangolo = new Rect(rectW, rectH, starDragX, starDragY);
+    rettangolo.size = rectSize;
+    rettangolo.color = rectColor;
     rettangolo.draw(context);
     lastRect = rettangolo;
   }
-
 }
+
+
 function rectStop() {
-  if(lastRect!=undefined){
+  if (lastRect != undefined) {
     shouldRect = false;
     rettangoli.push(lastRect);
+    // console.log(lastRect);
+    lastRect = undefined;
   }
-
+  // console.log(rettangoli);
 }
-function rectRedraw(){
-  for(var i=0;i<rettangoli.length;i++){
+function rectRedraw() {
+  for (var i = 0; i < rettangoli.length; i++) {
     rettangoli[i].draw(context);
   }
 }
 
-function controllaRect(){
-  if(canMovePoint){
-    var pos = getMousePosition(canvas, event);
-    for(var i=0;i<rettangoli;i++){
-      // if(){
+function getRectSize() {
+  var grandezza = document.getElementById("rectSize").value;
+  rectSize = grandezza;
+  document.getElementById("Rect-size-value").innerHTML = grandezza;
+  setRectSize();
+}
 
-      // }
+function setRectSize() {
+  if (rettangoli != 0) {
+    for (var i = 0; i < rettangoli.length; i++) {
+      rettangoli[i].size = rectSize;
     }
+    refreshCanvas(context);
   }
+}
+
+function getRectColor() {
+  var color = document.getElementById("rectColor").value;
+  rectColor = color;
+  setRectColor();
+}
+function setRectColor() {
+  if (rettangoli != 0) {
+    for (var i = 0; i < rettangoli.length; i++) {
+      rettangoli[i].color = rectColor;
+    }
+    refreshCanvas(context);
+  }
+}
+
+function thereIsRect(event) {
+  if (rettangoli.length != 0 && canMove) {
+    var coo = getMousePosition(canvas, event);
+    // console.log(rettangoli);
+    for (var i = 0; i < rettangoli.length; i++) {
+      if (
+        coo[0] > rettangoli[i].startX &&
+        coo[0] < rettangoli[i].startX + rettangoli[i].w &&
+        coo[1] > rettangoli[i].startY &&
+        coo[1] < rettangoli[i].startY + rettangoli[i].h
+      ) {
+        // unselect(false);
+        lastColorRect=rettangoli[i].color;
+        rettangoli[i].color="#4AA8F4"; 
+        rectSelected = i;
+        // console.log(rectSelected);
+        shouldMoveRect=true;
+        break;
+      }else{
+        // unselect(true);
+      }
+    }
+    refreshCanvas(context);
+    // console.log("rect: "+rectSelected);
+
+  }
+}
+function moveRect(event){
+  if(shouldMoveRect){
+    var coo=getMousePosition(canvas,event);
+    // var deltaX = rettangoli[rectSelected].starX - coo[0];
+    // var deltaY = rettangoli[rectSelected].starY - coo[1];
+    // console.log(  coo + " "+ deltaX+ " "+ deltaY);
+    // rettangoli[rectSelected].starX = coo[0];
+    // rettangoli[rectSelected].starY = coo[1];
+    rettangoli[rectSelected].startX= coo[0];
+    rettangoli[rectSelected].startY= coo[1];
+    refreshCanvas(context);
+  }
+}
+function endRectMove(event){
+  if(event.button === MAIN_MOUSE_BUTTON){
+    shouldMoveRect=false;
+  }
+
 }
 
 //-------------------------------------------------------------------------
 //classe segment
-class Segment{
-  constructor(posX,posY,starX,starY){
-    this.x=posX;
-    this.y=posY;
-    this.startX=starX;
-    this.starY=starY;
+class Segment {
+  constructor(posX, posY, startX, startY) {
+    this.x = posX;
+    this.y = posY;
+    this.startX = startX;
+    this.startY = startY;
     this.color = '#000';
     this.size = 5;
   }
-  draw(context){
+  draw(context) {
     context.beginPath();
-    context.lineWidth=this.size;
-    context.strokeStyle=this.color;
-    context.moveTo(this.startX,this.starY);
-    context.lineTo(this.x,this.y);
+    context.lineWidth = this.size;
+    context.strokeStyle = this.color;
+    context.moveTo(this.startX, this.startY);
+    context.lineTo(this.x, this.y);
     context.stroke();
   }
-
 }
 function segmentStart(event) {
   if (canSegment) {
     // console.log("start");
-      shouldSegment = true;
-      var startDragCoo = getMousePosition(canvas, event);
-      starDragX = startDragCoo[0];
-      starDragY = startDragCoo[1];
+    shouldSegment = true;
+    var startDragCoo = getMousePosition(canvas, event);
+    starDragX = startDragCoo[0];
+    starDragY = startDragCoo[1];
   }
 
 }
 function makeSegment(event) {
   if (shouldSegment) {
     // console.log("drag");
-      clearCanvas(context);
-      refreshCanvas(context);
-      var lastCoo = getMousePosition(canvas, event);
-      var segment= new Segment(lastCoo[0],lastCoo[1],starDragX,starDragY);
-      segment.draw(context);
-      lastSegment=segment;
+    clearCanvas(context);
+    refreshCanvas(context);
+    var lastCoo = getMousePosition(canvas, event);
+    var segment = new Segment(lastCoo[0], lastCoo[1], starDragX, starDragY);
+    segment.size = segmentSize;
+    segment.color = segmentColor;
+    segment.draw(context);
+    lastSegment = segment;
   }
 }
 function segmentStop() {
-  if(lastSegment!=undefined){
+  if (lastSegment != undefined) {
     shouldSegment = false;
     segments.push(lastSegment);
   }
 }
-function segmentRedraw(){
-  for(var i=0;i<segments.length;i++){
+function segmentRedraw() {
+  for (var i = 0; i < segments.length; i++) {
     segments[i].draw(context);
+  }
+}
+function getSegmentSize() {
+  var grandezza = document.getElementById("segmSize").value;
+  segmentSize = grandezza;
+  document.getElementById("Seg-size-value").innerHTML = grandezza;
+  setSegmentSize();
+}
+function setSegmentSize() {
+  if (segments != 0) {
+    for (var i = 0; i < segments.length; i++) {
+      segments[i].size = segmentSize;
+    }
+    refreshCanvas(context);
+  }
+}
+function getSegmentColor() {
+  var color = document.getElementById("segmColor").value;
+  segmentColor = color;
+  setSegmentColor();
+}
+function setSegmentColor() {
+  if (segments != 0) {
+    for (var i = 0; i < segments.length; i++) {
+      segments[i].color = segmentColor;
+    }
+    refreshCanvas(context);
   }
 }
 
@@ -547,7 +744,7 @@ function getMousePosition(canvas, event) {
   let rect = canvas.getBoundingClientRect();
   let scaleX = canvas.width / rect.width;
   let scaleY = canvas.height / rect.height;
- // console.log(scaleX+" "+ scaleY);
+  // console.log(scaleX+" "+ scaleY);
   let x = Math.round((event.x - rect.left) * scaleX);
   let y = Math.round((event.y - rect.top) * scaleY);
   var coordinate = [x, y];
@@ -566,11 +763,12 @@ function scriviGrandezza() {
 //funzione che pilisce e ridisegna sul canvas
 function refreshCanvas(context) {
   var checkboxes = document.getElementsByClassName("layer");
+    // console.log(rectSelected);
   clearCanvas(context);
   wichtool();
   if (checkboxes[0].checked) {
     dotRedraw();
-    if(isConnectedPoint ){
+    if (isConnectedPoint) {
       connectDots();
     }
   } else {
@@ -583,25 +781,23 @@ function refreshCanvas(context) {
   }
   if (checkboxes[2].checked) {
 
-      canvas.style.backgroundImage = ImgSrc;
-      canvas.style.backgroundSize = 'contain';
-      // context.drawImage(ImgSrc,0,0)
+    canvas.style.backgroundImage = ImgSrc;
+    canvas.style.backgroundSize = 'contain';
+    // context.drawImage(ImgSrc,0,0)
   } else {
     canvas.style.background = "#fff";
   }
 
 
 }
-var f= false;
+// var f = false;
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //Loafd Image
 //Mostra l'immagine scelta dall'utente
 function loadImage(ev) {
   if (ev.target.files) {
-    dotCount = 1;
-    puntini = [];
-    linee = [];
-    // refreshCanvas(context);
+    resetCanvas(context);
     let file = ev.target.files[0];
     var reader = new FileReader();
     reader.onloadend = function (e) {
@@ -609,13 +805,15 @@ function loadImage(ev) {
       image.src = e.target.result;
       image.onload = function () {
         var canvas = document.getElementById('canvas');
+        canvas.style.display = 'block';
         canvas.style.backgroundImage = 'url("' + this.src + '") ';
         ImgSrc = canvas.style.backgroundImage;
         canvas.style.backgroundSize = 'contain';
         canvas.width = this.width;
         canvas.height = this.height;
-        document.getElementById("container").style.display='block';
-        
+        canvas.style.border = "2px solid #343a40";
+        document.getElementById("container").style.display = 'block';
+
       }
     }
     reader.readAsDataURL(file);
@@ -626,68 +824,135 @@ function loadImage(ev) {
 //------------------------------------------------------------------------------
 //controllo scelta dell'utente
 function wichtool() {
-  var isChecked = document.getElementsByClassName("tools");
-  var numDisp=document.getElementById("selectNum");
-  // console.log(isChecked);
+  // console.log(pointSelected);
+  var isChecked = document.getElementsByClassName("btn-check");
+  var pointProperty = document.getElementById("Property-dot").style;
+  var lineProperty = document.getElementById("Property-line").style;
+  var ellipseProperty = document.getElementById("Property-ellipse").style;
+  var rectangleProperty = document.getElementById("Property-rectangle").style;
+  var segmentProperty = document.getElementById("Property-segment").style;
+  var mouseProperty = document.getElementById("Property-mouse").style;
+
+  // var numDisp=document.getElementById("selectNum");
   if (isChecked[0].checked) {
+    //mouse
+    pointProperty.display = 'none';
+    lineProperty.display = 'none';
+    ellipseProperty.display = 'none';
+    rectangleProperty.display = 'none';
+    segmentProperty.display = 'none';
+    mouseProperty.display = 'block';
+    canMakePoint = false;
+    canDraw = false;
+    canMove = true;
+    canEll = false;
+    canRect = false;
+    canSegment = false;
+    // numDisp.style.display='none';
+    // if(puntini.length>1){
+    //   numDisp.style.display='block';
+    //   document.getElementById("dotNumber").setAttribute("max",puntini.length);
+    // }
+
+  } else if (isChecked[1].checked) {
+    //Puntino
+    unselect(true)
+    pointProperty.display = 'block';
+    lineProperty.display = 'none';
+    ellipseProperty.display = 'none';
+    rectangleProperty.display = 'none';
+    segmentProperty.display = 'none';
+    mouseProperty.display = 'none';
     canMakePoint = true;
     canDraw = false;
-    canMovePoint = false;
+    canMove = false;
     canEll = false;
     canRect = false;
-    canSegment=false;
-    numDisp.style.display='none';
-  } else if (isChecked[1].checked) {
+    canSegment = false;
+    // numDisp.style.display='none';
+  } else if (isChecked[2].checked) {
+    //Penna
+    unselect(true)
+    pointProperty.display = 'none';
+    lineProperty.display = 'block';
+    ellipseProperty.display = 'none';
+    rectangleProperty.display = 'none';
+    segmentProperty.display = 'none';
+    mouseProperty.display = 'none';
     canMakePoint = false;
     canDraw = true;
-    canMovePoint = false;
+    canMove = false;
     canRect = false;
     canEll = false;
-    canSegment=false;
-    numDisp.style.display='none';
-
-  } else if (isChecked[2].checked) {
-    canMakePoint = false;
-    canDraw = false;
-    canMovePoint = true;
-    canEll = false;
-    canRect = false;
-    canSegment=false;
-    numDisp.style.display='none';
-    if(puntini.length>1){
-      numDisp.style.display='block';
-      document.getElementById("dotNumber").setAttribute("max",puntini.length);
-    }
+    canSegment = false;
+    // numDisp.style.display='none';
 
   } else if (isChecked[3].checked) {
+    //ellipse
+    unselect(true)
+    pointProperty.display = 'none';
+    lineProperty.display = 'none';
+    ellipseProperty.display = 'block';
+    rectangleProperty.display = 'none';
+    segmentProperty.display = 'none';
+    mouseProperty.display = 'none';
     canMakePoint = false;
     canDraw = false;
-    canMovePoint = false;
-    canRect = true;
-    canEll = false;
-    canSegment=false;
-    numDisp='none';
-
-  } else if (isChecked[4].checked) {
-    canMakePoint = false;
-    canDraw = false;
-    canMovePoint = false;
+    canMove = false;
     canRect = false;
     canEll = true;
-    canSegment=false;
-    numDisp='none';
-
-  }else if(isChecked[5].checked){
-    canSegment=true;
+    canSegment = false;
+    // numDisp='none';
+  } else if (isChecked[4].checked) {
+    //rect
+    unselect(true)
+    pointProperty.display = 'none';
+    lineProperty.display = 'none';
+    ellipseProperty.display = 'none';
+    rectangleProperty.display = 'block';
+    segmentProperty.display = 'none';
+    mouseProperty.display = 'none';
     canMakePoint = false;
     canDraw = false;
-    canMovePoint = false;
+    canMove = false;
+    canRect = true;
+    canEll = false;
+    canSegment = false;
+    // numDisp='none';
+
+  } else if (isChecked[5].checked) {
+    unselect(true)
+    pointProperty.display = 'none';
+    lineProperty.display = 'none';
+    ellipseProperty.display = 'none';
+    rectangleProperty.display = 'none';
+    segmentProperty.display = 'block';
+    mouseProperty.display = 'none';
+    canSegment = true;
+    canMakePoint = false;
+    canDraw = false;
+    canMove = false;
     canRect = false;
     canEll = false;
-    numDisp='none';
+    // numDisp='none';
 
   }
+  console.log("dot: "+pointSelected);
+  console.log("rect: "+rectSelected);
+
   // console.log(canMovePoint);
+}
+function resetCanvas(context) {
+  clearCanvas(context);
+  dotCount = 1;
+  puntini = [];
+  linee = [];
+  ellissi = [];
+  rettangoli = [];
+  segments = [];
+  lastEll = null;
+  lastRect = null;
+  lastSegment = null;
 }
 //-------------------------------------------------------------------------------
 function lineVisibili() {
@@ -700,21 +965,25 @@ function lineVisibili() {
   if (ellissi.length != 0) {
     ellRedraw();
   }
-  if(segments.length!=0){
+  if (segments.length != 0) {
     segmentRedraw();
   }
 }
 //--------------------------------------------------------------------------------
-
 //--------------------------------------------------------------------------------
 //EventListener
+var clear = document.getElementById('clear');
+var deleteAllLine= document.getElementById("Delete-All-Line");
 canvas.addEventListener("mousedown", controllaPuntino);
-canvas.addEventListener("mousemove", movePoint, false);
+canvas.addEventListener("mousemove", movePoint);
 canvas.addEventListener("mouseup", endPointMove);
 canvas.addEventListener("mousedown", makeDot);
 canvas.addEventListener("mousedown", startLine);
 canvas.addEventListener("mouseup", endLine);
 canvas.addEventListener("mousemove", makeLine, false);
+canvas.addEventListener("mousemove", moveRect);
+canvas.addEventListener("mouseup", endRectMove);
+canvas.addEventListener("mousedown", thereIsRect);
 canvas.addEventListener("mousedown", rectStart);
 canvas.addEventListener("mouseup", rectStop);
 canvas.addEventListener("mousemove", makeRect);
@@ -724,12 +993,15 @@ canvas.addEventListener("mousemove", makeell);
 canvas.addEventListener("mousedown", segmentStart);
 canvas.addEventListener("mouseup", segmentStop);
 canvas.addEventListener("mousemove", makeSegment);
-fileInput.addEventListener("change",loadImage);
-fileselector.addEventListener("click", function(){
-  fileInput.click();
+fileInput.addEventListener("change", loadImage);
+clear.addEventListener("click", function () {
+  resetCanvas(context);
 });
-// document.querySelector('#container').oninput = function (ev) {
-//   if (ev.target.value) {
-//     refreshCanvas(context);
-//   }
-// }
+deleteAllLine.addEventListener("click", function(){
+  clearAllLine(context);
+});
+document.querySelector('#container').oninput = function (ev) {
+  if (ev.target.value) {
+    refreshCanvas(context);
+  }
+}

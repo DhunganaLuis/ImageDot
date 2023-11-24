@@ -2,42 +2,233 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unisci Puntini</title>
-    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous"> -->
-    <link rel="stylesheet" href="./Css/navBar.css">
-    <link rel="stylesheet" href="./Css/index.css">
-    <link rel="stylesheet" href="./Css/canvas.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ImageDot</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <link rel="stylesheet" href="./Css/index.css">
 </head>
 
 <body>
-    <nav>
-        <div id="menubar">
-            <div class="elementi">
-                <input type="file" id="fileinput" accept=".jpg, jpeg, .png, .webp" name="fileImg"
-                    style="width: 0px; visibility: hidden;">
-                <label id="fileinputelect" for="fileImg">Open</label>
-            </div>
-            <div class="elementi"><a>Save</a></div>
-        </div>
-    </nav>
-    <div class="col-2">
-        <div class="tool">
-
-        </div>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand">ImageDot</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page">
+              <input type="file" id="fileinput" accept=".jpg, .jpeg, .png, .webp" name="fileImg"
+                style="width: 0px; visibility: hidden;">
+              <label id="fileInputLabel" for="fileinput"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                  fill="currentColor" class="bi bi-file-earmark-arrow-up" viewBox="0 0 16 16">
+                  <path
+                    d="M8.5 11.5a.5.5 0 0 1-1 0V7.707L6.354 8.854a.5.5 0 1 1-.708-.708l2-2a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 7.707V11.5z" />
+                  <path
+                    d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
+                </svg></label>
+            </a>
+          </li>
+          <li class="nav-item active">
+            <a class="nav-link"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                class="bi bi-floppy" viewBox="0 0 16 16">
+                <path d="M11 2H9v3h2V2Z" />
+                <path
+                  d="M1.5 0h11.586a1.5 1.5 0 0 1 1.06.44l1.415 1.414A1.5 1.5 0 0 1 16 2.914V14.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 14.5v-13A1.5 1.5 0 0 1 1.5 0ZM1 1.5v13a.5.5 0 0 0 .5.5H2v-4.5A1.5 1.5 0 0 1 3.5 9h9a1.5 1.5 0 0 1 1.5 1.5V15h.5a.5.5 0 0 0 .5-.5V2.914a.5.5 0 0 0-.146-.353l-1.415-1.415A.5.5 0 0 0 13.086 1H13v4.5A1.5 1.5 0 0 1 11.5 7h-7A1.5 1.5 0 0 1 3 5.5V1H1.5a.5.5 0 0 0-.5.5Zm3 4a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5V1H4v4.5ZM3 15h10v-4.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5V15Z" />
+              </svg></a>
+          </li>
+        </ul>
+      </div>
     </div>
-    <div class="col-8">
-        <center>
-            <canvas id="canvas"></canvas>
-        </center>
-    </div>
-    <div class="col-2">
+  </nav>
 
-    </div>ss
-    <script src="./Js/class.js"></script>
-    <script src="./Js/saveImg.js"></script>
+  <!-- Content -->
+  <div class="container my-3">
+    <div class="row">
+      <div class="col-sm-2">
+        <!-- Tool selection -->
+        <h5 class="mt-3 mb-4">Tools</h5>
+        <div class="btn-group-vertical" role="group" aria-label="Vertical radio toggle button group">
+          <input type="radio" class="btn-check" name="vbtn-radio" id="vbtn-radio1" autocomplete="off"
+            onchange="wichtool()" checked>
+          <label class="btn btn-outline-danger mb-2" for="vbtn-radio1">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrows-move"
+              viewBox="0 0 16 16">
+              <path fill-rule="evenodd"
+                d="M7.646.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 1.707V5.5a.5.5 0 0 1-1 0V1.707L6.354 2.854a.5.5 0 1 1-.708-.708l2-2zM8 10a.5.5 0 0 1 .5.5v3.793l1.146-1.147a.5.5 0 0 1 .708.708l-2 2a.5.5 0 0 1-.708 0l-2-2a.5.5 0 0 1 .708-.708L7.5 14.293V10.5A.5.5 0 0 1 8 10zM.146 8.354a.5.5 0 0 1 0-.708l2-2a.5.5 0 1 1 .708.708L1.707 7.5H5.5a.5.5 0 0 1 0 1H1.707l1.147 1.146a.5.5 0 0 1-.708.708l-2-2zM10 8a.5.5 0 0 1 .5-.5h3.793l-1.147-1.146a.5.5 0 0 1 .708-.708l2 2a.5.5 0 0 1 0 .708l-2 2a.5.5 0 0 1-.708-.708L14.293 8.5H10.5A.5.5 0 0 1 10 8z" />
+            </svg>
+          </label>
+          <input type="radio" class="btn-check" name="vbtn-radio" id="vbtn-radio2" autocomplete="off"
+            onchange="wichtool()">
+          <label class="btn btn-outline-danger" for="vbtn-radio2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-circle-fill"
+              viewBox="0 0 16 16">
+              <circle cx="8" cy="8" r="8" />
+            </svg>
+          </label>
+          <input type="radio" class="btn-check" name="vbtn-radio" id="vbtn-radio3" autocomplete="off"
+            onchange="wichtool()" >
+          <label class="btn btn-outline-danger" for="vbtn-radio3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil"
+              viewBox="0 0 16 16">
+              <path
+                d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z" />
+            </svg>
+          </label>
+          <input type="radio" class="btn-check" name="vbtn-radio" id="vbtn-radio4" autocomplete="off"
+            onchange="wichtool()">
+          <label class="btn btn-outline-danger" for="vbtn-radio4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-circle"
+              viewBox="0 0 16 16">
+              <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+            </svg>
+          </label>
+          <input type="radio" class="btn-check" name="vbtn-radio" id="vbtn-radio5" autocomplete="off"
+            onchange="wichtool()">
+          <label class="btn btn-outline-danger" for="vbtn-radio5">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-square"
+              viewBox="0 0 16 16">
+              <path
+                d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z" />
+            </svg>
+          </label>
+          <input type="radio" class="btn-check" name="vbtn-radio" id="vbtn-radio6" autocomplete="off"
+            onchange="wichtool()">
+          <label class="btn btn-outline-danger" for="vbtn-radio6">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+              class="bi bi-arrow-up-right" viewBox="0 0 16 16">
+              <path fill-rule="evenodd"
+                d="M14 2.5a.5.5 0 0 0-.5-.5h-6a.5.5 0 0 0 0 1h4.793L2.146 13.146a.5.5 0 0 0 .708.708L13 3.707V8.5a.5.5 0 0 0 1 0v-6z" />
+            </svg>
+          </label>
+          <button type="button" class="btn btn-outline-danger" onclick="pressButton()"><svg
+              xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+              class="bi bi-bounding-box-circles" viewBox="0 0 16 16">
+              <path
+                d="M2 1a1 1 0 1 0 0 2 1 1 0 0 0 0-2zM0 2a2 2 0 0 1 3.937-.5h8.126A2 2 0 1 1 14.5 3.937v8.126a2 2 0 1 1-2.437 2.437H3.937A2 2 0 1 1 1.5 12.063V3.937A2 2 0 0 1 0 2zm2.5 1.937v8.126c.703.18 1.256.734 1.437 1.437h8.126a2.004 2.004 0 0 1 1.437-1.437V3.937A2.004 2.004 0 0 1 12.063 2.5H3.937A2.004 2.004 0 0 1 2.5 3.937zM14 1a1 1 0 1 0 0 2 1 1 0 0 0 0-2zM2 13a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm12 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2z" />
+            </svg></button>
+          <button type="button" class="btn btn-outline-danger" id="clear"><svg xmlns="http://www.w3.org/2000/svg"
+              width="16" height="16" fill="currentColor" class="bi bi-clipboard2" viewBox="0 0 16 16">
+              <path
+                d="M3.5 2a.5.5 0 0 0-.5.5v12a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-12a.5.5 0 0 0-.5-.5H12a.5.5 0 0 1 0-1h.5A1.5 1.5 0 0 1 14 2.5v12a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 14.5v-12A1.5 1.5 0 0 1 3.5 1H4a.5.5 0 0 1 0 1h-.5Z" />
+              <path
+                d="M10 .5a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5.5.5 0 0 1-.5.5.5.5 0 0 0-.5.5V2a.5.5 0 0 0 .5.5h5A.5.5 0 0 0 11 2v-.5a.5.5 0 0 0-.5-.5.5.5 0 0 1-.5-.5Z" />
+            </svg></button>
+        </div>
+        <!-- Layer selection -->
+        <div id="container">
+          <h5 class="mt-4">Layer</h5>
+          <input type="checkbox" class="layer" checked>
+          <label for="vehicle1"> Puntini</label><br>
+          <input type="checkbox" class="layer" checked>
+          <label for="vehicle2">Linee visibili</label><br>
+          <input type="checkbox" class="layer" checked>
+          <label for="vehicle3">Immagine</label><br>
+        </div>
+      </div>
+
+      <div class="col-sm-8 text-center">
+        <canvas id="canvas"></canvas>
+      </div>
+
+      <div class="col-sm-2 text-center">
+        <p class="mt-3">Property</p>
+        <div class="property" id="Property-dot">
+          <h6>Dot size</h6>
+          <input type="range" id="dimensione" oninput="getDotSize()" value="5" step="1" min="1" max="50">
+          <br>
+          <span id="value">5</span>
+          <br>
+          <h6>Color</h6>
+          <input type="color" id="colore" oninput="getDotColor()">
+          <br>
+          <h6>Invert</h6>
+          <button type="button" class="btn btn-outline-danger" onclick="numberInverter()" id="b"><svg
+              xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-repeat-1"
+              viewBox="0 0 16 16">
+              <path
+                d="M11 4v1.466a.25.25 0 0 0 .41.192l2.36-1.966a.25.25 0 0 0 0-.384l-2.36-1.966a.25.25 0 0 0-.41.192V3H5a5 5 0 0 0-4.48 7.223.5.5 0 0 0 .896-.446A4 4 0 0 1 5 4h6Zm4.48 1.777a.5.5 0 0 0-.896.446A4 4 0 0 1 11 12H5.001v-1.466a.25.25 0 0 0-.41-.192l-2.36 1.966a.25.25 0 0 0 0 .384l2.36 1.966a.25.25 0 0 0 .41-.192V13h6a5 5 0 0 0 4.48-7.223Z" />
+              <path d="M9 5.5a.5.5 0 0 0-.854-.354l-1.75 1.75a.5.5 0 1 0 .708.708L8 6.707V10.5a.5.5 0 0 0 1 0v-5Z" />
+            </svg>
+          </button>
+        </div>
+        <div class="property" id="Property-line">
+          <h6>Line size</h6>
+          <input type="range" id="penSize" value="5" step="1" min="1" max="50" oninput="getLineSize()">
+          <br>
+          <span id="Pen-size-value">4</span>
+          <br>
+          <h6>Color</h6>
+          <input type="color" id="penColor" oninput="getLineColor()">
+          <br>
+          <h6>Delete All</h6>
+          <button type="button" class="btn btn-outline-danger" id="Delete-All-Line"><svg xmlns="http://www.w3.org/2000/svg" width="16"
+            height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+            <path
+              d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6Z" />
+            <path
+              d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1ZM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118ZM2.5 3h11V2h-11v1Z" />
+          </svg>
+        </button>
+        </div>
+        <div class="property" id="Property-ellipse">
+          <h6>Line size</h6>
+          <input type="range" id="ellSize" value="5" step="1" min="1" max="50" oninput="getEllSize()">
+          <br>
+          <span id="Ell-size-value">5</span>
+          <br>
+          <h6>Color</h6>
+          <input type="color" id="ellColor" oninput="getEllColor()">
+        </div>
+        <div class="property" id="Property-rectangle">
+          <h6>Line size</h6>
+          <input type="range" id="rectSize" value="5" step="1" min="1" max="50" oninput="getRectSize()">
+          <br>
+          <span id="Rect-size-value">5</span>
+          <br>
+          <h6>Color</h6>
+          <input type="color" id="rectColor" oninput=" getRectColor()">
+        </div>
+        <div class="property" id="Property-segment">
+          <h6>Line size</h6>
+          <input type="range" id="segmSize" value="5" step="1" min="1" max="50" oninput="getSegmentSize()">
+          <br>
+          <span id="Seg-size-value">5</span>
+          <br>
+          <h6>Color</h6>
+          <input type="color" id="segmColor" oninput="getSegmentColor()">
+        </div>
+        <div class="property" id="Property-mouse">
+          <h6>Delete</h6>
+          <button type="button" class="btn btn-outline-danger" onclick="deletePoint()"><svg xmlns="http://www.w3.org/2000/svg" width="16"
+              height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+              <path
+                d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6Z" />
+              <path
+                d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1ZM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118ZM2.5 3h11V2h-11v1Z" />
+            </svg></button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <!-- JS -->
+  <script src="./Js/class.js"></script>
+  <!-- <script src="./Js/variabiliGlobali.js"></script>
+  <script src="./Js/variabiliGlobali.js"></script>
+  <script src="./Js/dot.js"></script>
+  <script src="./Js/ellipse.js"></script>
+  <script src="./Js/pen.js"></script>
+  <script src="./Js/rect.js"></script>
+  <script src="./Js/segment.js"></script>
+  <script src="./Js/load.js"></script>
+  <script src="./Js/listener.js"></script> -->
+  <script src="./Js/saveImg.js"></script>
 </body>
 
 </html>
